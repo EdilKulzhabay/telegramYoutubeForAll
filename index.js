@@ -2,6 +2,8 @@ import { Telegraf } from 'telegraf';
 import mongoose from 'mongoose';
 import express from 'express'
 import dotenv from 'dotenv';
+import * as admin from 'firebase-admin';
+import serviceAccount from './serviceAccountKey.json';
 import { menus } from './menus.js';
 import { registerPayHandlers } from './handlers/pay.js';
 import { registerPartnerHandlers } from './handlers/partner.js';
@@ -11,6 +13,10 @@ import { registerCommonHandlers } from './handlers/common.js';
 import User from './models/User.js'; // Импортируем модель пользователя
 
 dotenv.config();
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
 
 mongoose
   .connect("mongodb://localhost:27017/telegram")
