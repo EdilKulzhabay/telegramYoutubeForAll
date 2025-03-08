@@ -1,4 +1,4 @@
-export const registerDonateHandlers = (bot, userStates, menus) => {
+const registerDonateHandlers = (bot, userStates, menus) => {
     bot.action('donateBase', async (ctx) => {
       const chatId = ctx.chat.id;
       const state = userStates.get(chatId) || { currentMenu: 'start', history: [] };
@@ -55,3 +55,5 @@ export const registerDonateHandlers = (bot, userStates, menus) => {
       }
     });
   };
+
+module.exports = { registerDonateHandlers }

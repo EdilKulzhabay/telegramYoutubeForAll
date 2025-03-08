@@ -1,4 +1,4 @@
-export const registerAboutHandlers = (bot, userStates, menus) => {
+ const registerAboutHandlers = (bot, userStates, menus) => {
     bot.action('aboutChannel', async (ctx) => {
       const chatId = ctx.chat.id;
       const state = userStates.get(chatId) || { currentMenu: 'start', history: [] };
@@ -13,3 +13,5 @@ export const registerAboutHandlers = (bot, userStates, menus) => {
       }
     });
   };
+
+module.exports = { registerAboutHandlers }

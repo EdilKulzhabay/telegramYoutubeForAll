@@ -1,5 +1,7 @@
 ./node_modules
+./functions/node_modules
 node_modules
 firebase-debug.logfirebase-debug.log
 firebase-debug.log
 serviceAccountKey.json
+serviceAccountKey.js

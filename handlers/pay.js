@@ -1,4 +1,4 @@
-export const registerPayHandlers = (bot, userStates, menus) => {
+const registerPayHandlers = (bot, userStates, menus) => {
     bot.action('payAccess', async (ctx) => {
       const chatId = ctx.chat.id;
       const state = userStates.get(chatId) || { currentMenu: 'start', history: [] };
@@ -69,3 +69,5 @@ export const registerPayHandlers = (bot, userStates, menus) => {
       }
     });
   };
+
+module.exports = { registerPayHandlers }

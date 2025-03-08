@@ -1,6 +1,11 @@
-import { start, basePrice, aboutChannel, partnerMenu, donateBase, oneMonth, sixMonths, twelveMonths, USDT, forFriends, makeContent, referralLinkText2, referralLinkText1, statistics, getMoney, donateText } from './messages.js';
+const { 
+    start, basePrice, aboutChannel, partnerMenu, donateBase, 
+    oneMonth, sixMonths, twelveMonths, USDT, forFriends, 
+    makeContent, referralLinkText2, referralLinkText1, 
+    statistics, getMoney, donateText 
+} = require('./messages.js');
 
-export const menus = {
+const menus = {
     start: {
       text: start,
       reply_markup: {
@@ -207,3 +212,5 @@ export const menus = {
         },
     },
   };
+
+module.exports = { menus }

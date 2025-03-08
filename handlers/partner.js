@@ -1,6 +1,6 @@
-import User from '../models/User.js'; // Импортируем модель пользователя
+const User = require('../models/User')
 
-export const registerPartnerHandlers = (bot, userStates, menus) => {
+const registerPartnerHandlers = (bot, userStates, menus) => {
   bot.action('partnerMenu', async (ctx) => {
     const chatId = ctx.chat.id;
     const state = userStates.get(chatId) || { currentMenu: 'start', history: [] };
@@ -100,3 +100,5 @@ ${user.refferal}
     }
   });
 };
+
+module.exports = { registerPartnerHandlers }
