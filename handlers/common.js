@@ -1,4 +1,4 @@
-export const registerCommonHandlers = (bot, userStates, menus) => {
+const registerCommonHandlers = (bot, userStates, menus) => {
     bot.action('back', async (ctx) => {
       const chatId = ctx.chat.id;
       const state = userStates.get(chatId);
@@ -62,3 +62,5 @@ export const registerCommonHandlers = (bot, userStates, menus) => {
       }
     });
   };
+
+module.exports = { registerCommonHandlers }

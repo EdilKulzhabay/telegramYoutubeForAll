@@ -2,9 +2,9 @@
   "name": "telegrambot",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon --ignore serviceAccountKey.json index.js"
   },
   "keywords": [],
   "author": "",
