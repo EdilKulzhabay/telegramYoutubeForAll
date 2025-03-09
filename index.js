@@ -2,8 +2,6 @@ const { Telegraf } = require('telegraf');
 const mongoose = require('mongoose');
 const express = require('express');
 const dotenv = require('dotenv');
-const admin = require('firebase-admin');
-const serviceAccountKey = require('./serviceAccountKey.json');
 const { menus } = require('./menus.js');
 const { registerPayHandlers } = require('./handlers/pay.js');
 const { registerPartnerHandlers } = require('./handlers/partner.js');
@@ -13,10 +11,6 @@ const { registerCommonHandlers } = require('./handlers/common.js');
 const User = require('./models/User.js');
 
 dotenv.config();
-
-const firebaseApp = admin.initializeApp({
-  credential: admin.credential.cert(serviceAccountKey),
-});
 
 mongoose
   .connect("mongodb://localhost:27017/telegram")
@@ -40,8 +34,6 @@ const generateReferralLink = (chatId) => {
 bot.start(async (ctx) => {
   const chatId = ctx.chat.id.toString();
   const args = ctx.startPayload;
-  console.log(ctx.chat);
-  
 
   try {
     let user = await User.findOne({ chatId });
@@ -107,16 +99,31 @@ const checkApiKey = (req, res, next) => {
   next();
 };
 
-app.post('/lavaTest', checkApiKey, async (req, res) => {
+app.post('/lavaTest', async (req, res) => {
   try {
+    console.log("req.headers = ", req.headers);
     console.log("req.body = ", req.body);
+    const body = req.body
+    res.json({body})
   } catch (error) {
     console.error('Ошибка в lavaTest:', error);
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
   }
 });
 
-const PORT = process.env.PORT || 3005;
+app.post('/lavaTest2', async (req, res) => {
+  try {
+    console.log("req.headers = ", req.headers);
+    console.log("req.body = ", req.body);
+    const body = req.body
+    res.json({body})
+  } catch (error) {
+    console.error('Ошибка в lavaTest:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
+});
+
+const PORT = process.env.PORT || 3006;
 app.listen(PORT, async () => {
   console.log(`Сервер запущен на порту ${PORT}`);
 });
