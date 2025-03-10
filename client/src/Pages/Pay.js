@@ -37,7 +37,7 @@ export default function Pay() {
                     headers: { "Content-Type": "application/json" },
                 });
     
-                navigate(data.paymentUrl);
+                window.location.href = data.paymentUrl;
             } else {
                 console.error("Ошибка: data.id отсутствует", data);
             }
@@ -92,8 +92,9 @@ export default function Pay() {
                     onChange={(e) => {setEmail(e.target.value)}}
                 />
                 
+                
                 <h2 className="text-lg font-bold mb-2">Стоимость</h2>
-                <p className="text-2xl font-bold mb-6">89.6 USD</p>
+                <p className="text-2xl font-bold mb-6">{paymentMethod === "bank_rf" ? "50 RUB" : "0.56 USD"}</p>
                 
                 <button className="w-full p-3 bg-gray-800 rounded-lg text-white" onClick={() => {setStep(2)}}>Далее</button>
             </div> :
@@ -113,7 +114,7 @@ export default function Pay() {
                     </div>
                     <div>
                     <p className="text-gray-400 text-sm">Стоимость</p>
-                    <p className="text-white">89.6 USD</p>
+                    <p className="text-white">{paymentMethod === "bank_rf" ? "50 RUB" : "0.56 USD"}</p>
                     </div>
                 </div>
                 
