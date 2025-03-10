@@ -3,7 +3,7 @@ import { router } from "./routes";
 
 export default function App() {
     return <>
-        {/* <RouterProvider router={router} /> */}
-        <div className="text-3xl text-blue-500 font-medium"></div>
+        <RouterProvider router={router} />
+        {/* <div className="text-3xl text-blue-500 font-medium">Telegram bot</div> */}
     </>
 }
