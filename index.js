@@ -226,7 +226,38 @@ async function giveChannelAccess(chatId) {
     }
 }
 
-module.exports = { giveChannelAccess };
+app.post("/updateUser", async (req, res) => {
+  try {
+    console.log("we in updateUser req.body = ", req.body);
+    
+    const {chatId, email} = req.body
+
+    const user = await User.findOne({chatId})
+
+    user.email = email
+
+    await user.save()
+  } catch (error) {
+    console.error('Ошибка в lavaTest:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
+})
+
+app.post("/updateUserInvoiceId", async (req, res) => {
+  try {
+    console.log("we in updateUserInvoiceId req.body = ", req.body);
+    const {chatId, invoiceId} = req.body
+
+    const user = await User.findOne({chatId})
+
+    user.invoiceId = invoiceId
+
+    await user.save()
+  } catch (error) {
+    console.error('Ошибка в lavaTest:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
+})
 
 
 const PORT = process.env.PORT || 3006;
