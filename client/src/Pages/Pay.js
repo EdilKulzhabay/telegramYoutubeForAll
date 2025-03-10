@@ -43,7 +43,7 @@ export default function Pay() {
                     headers: { "Content-Type": "application/json" },
                 });
     
-                window.open(data.paymentUrl, "_blank");
+                window.location.href = data.paymentUrl;
 
             } else {
                 console.error("Ошибка: data.id отсутствует", data);
