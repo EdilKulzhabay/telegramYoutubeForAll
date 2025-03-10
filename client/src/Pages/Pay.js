@@ -1,20 +1,54 @@
 import axios from "axios";
 import { useState } from "react";
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import api from "../api";
 
 export default function Pay() {
     const { chatId, period } = useParams()
     const [paymentMethod, setPaymentMethod] = useState("bank_rf");
     const [email, setEmail] = useState("")
+    const navigate = useNavigate();
 
     const [step, setStep] = useState(1)
 
-    const handleClick = () => {
-        api.post("/updateUser", {chatId, email}, {
+    const handleClick = async () => {
+        await api.post("/updateUser", { chatId, email }, {
             headers: { "Content-Type": "application/json" },
-        })
-    }
+        });
+    
+        const periodicity = period === 1 ? "MONTHLY" : period === 3 ? "PERIOD_90_DAYS" : "PERIOD_YEAR";
+        const currency = paymentMethod === "bank_rf" ? "RUB" : "USD";
+    
+        try {
+            const { data } = await api.post('https://gate.lava.top/api/v2/invoice', {
+                email,
+                offerId: process.env.OFFER_ID, // Исправлено
+                periodicity,
+                currency,
+                // paymentMethod: "UNLIMINT"
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Api-Key": process.env.X_API_KEY, // Исправлено
+                },
+            });
+    
+            if (data && data.id) {
+                const invoiceId = data.id;
+    
+                await api.post("/updateUserInvoiceId", { chatId, invoiceId }, {
+                    headers: { "Content-Type": "application/json" },
+                });
+    
+                navigate(data.paymentUrl);
+            } else {
+                console.error("Ошибка: data.id отсутствует", data);
+            }
+        } catch (error) {
+            console.error("Ошибка при создании счета:", error);
+        }
+    };
+    
 
     return <div className="flex items-center justify-center min-h-screen bg-black text-white p-4">
         {step === 1 ? 

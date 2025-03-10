@@ -30,6 +30,10 @@ const UserSchema = new mongoose.Schema(
         email: {
             type: String,
             default: ""
+        },
+        invoiceId: {
+            type: String,
+            default: ""
         }
     },
     {
