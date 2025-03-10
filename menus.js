@@ -13,8 +13,8 @@ const menus = {
           [{ text: 'Оплатить доступ', callback_data: 'payAccess' }],
           [{ text: 'Подробнее о канале', callback_data: 'aboutChannel' }],
           // [{ text: 'Меню партнера', callback_data: 'partnerMenu' }],
-          [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
-          [{ text: 'Подарить БАЗУ', callback_data: 'donateBase' }],
+          // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+          // [{ text: 'Подарить БАЗУ', callback_data: 'donateBase' }],
         ],
       },
     },
@@ -39,7 +39,7 @@ const menus = {
           inline_keyboard: [
             [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
-            [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+            // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', callback_data: 'offer' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
@@ -52,7 +52,7 @@ const menus = {
           inline_keyboard: [
             [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
-            [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+            // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', callback_data: 'offer' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
@@ -65,7 +65,7 @@ const menus = {
           inline_keyboard: [
             [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
-            [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+            // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', callback_data: 'offer' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
@@ -90,7 +90,7 @@ const menus = {
       text: aboutChannel, // Можно заменить на другой текст, если нужно
       reply_markup: {
         inline_keyboard: [
-          [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+          // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
           [{ text: 'Назад', callback_data: 'back' }],
         ],
       },
@@ -179,7 +179,7 @@ const menus = {
           inline_keyboard: [
             [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
-            [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+            // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', callback_data: 'offer' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
@@ -192,7 +192,7 @@ const menus = {
           inline_keyboard: [
             [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
-            [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+            // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', callback_data: 'offer' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
@@ -205,7 +205,7 @@ const menus = {
           inline_keyboard: [
             [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
-            [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+            // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', callback_data: 'offer' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
