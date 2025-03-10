@@ -105,7 +105,7 @@ const menus = {
           [{ text: 'Реферальная ссылка', callback_data: 'referralLink' }],
           [{ text: 'Моя статистика', callback_data: 'statistics' }],
           [{ text: 'Создать заявку на вывод средства', callback_data: 'getMoney' }],
-          [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+          // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
           [{ text: 'Назад', callback_data: 'back' }],
         ],
       },
