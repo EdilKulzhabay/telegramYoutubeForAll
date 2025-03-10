@@ -70,6 +70,22 @@ bot.start(async (ctx) => {
   }
 });
 
+bot.on('chat_join_request', async (ctx) => {
+  const user = ctx.chatJoinRequest.from;
+  console.log(ctx);
+
+  console.log(user);
+  
+  
+  
+  console.log(`Запрос на вступление: ${user.first_name} (@${user.username})`);
+
+  await ctx.telegram.sendMessage(
+      user.id,
+      `Привет, ${user.first_name}! Ваша заявка на вступление в канал рассматривается.`
+  );
+});
+
 registerPayHandlers(bot, userStates, menus);
 registerPartnerHandlers(bot, userStates, menus);
 registerDonateHandlers(bot, userStates, menus);
@@ -99,7 +115,7 @@ const checkApiKey = (req, res, next) => {
   next();
 };
 
-app.post('/lavaTest', async (req, res) => {
+app.post('/lavaTopNormalPay', async (req, res) => {
   try {
     console.log("req.headers = ", req.headers);
     console.log("req.body = ", req.body);
@@ -111,7 +127,7 @@ app.post('/lavaTest', async (req, res) => {
   }
 });
 
-app.post('/lavaTest2', async (req, res) => {
+app.post('/lavaTopRegularPay', async (req, res) => {
   try {
     console.log("req.headers = ", req.headers);
     console.log("req.body = ", req.body);

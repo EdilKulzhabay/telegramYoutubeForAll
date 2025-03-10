@@ -10,8 +10,14 @@ const UserSchema = new mongoose.Schema(
             type: Boolean,
             default: false
         },
-        payDate: {
-            type: Date
+        payData: {
+            date: {
+                type:  Date
+            },
+            period: {
+                type: String,
+                default: ""
+            }
         },
         refferal: {
             type: String,
