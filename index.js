@@ -118,6 +118,11 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
 const app = express();
 app.use(express.json());
+app.use(
+  cors({
+      origin: "*",
+  })
+);
 app.use(bot.webhookCallback('/bot'));
 
 const API_KEY = process.env.API_KEY;
