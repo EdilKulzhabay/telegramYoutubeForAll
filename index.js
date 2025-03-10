@@ -70,21 +70,38 @@ bot.start(async (ctx) => {
   }
 });
 
-bot.on('chat_join_request', async (ctx) => {
-  const user = ctx.chatJoinRequest.from;
-  console.log(ctx);
+bot.on("chat_join_request", async (ctx) => {
+    try {
+        const user = ctx.chatJoinRequest.from;
+        const chatId = user.id;
 
-  console.log(user);
-  
-  
-  
-  console.log(`Запрос на вступление: ${user.first_name} (@${user.username})`);
+        console.log(`Запрос на вступление: ${user.first_name} (@${user.username})`);
 
-  await ctx.telegram.sendMessage(
-      user.id,
-      `Привет, ${user.first_name}! Ваша заявка на вступление в канал рассматривается.`
-  );
+        // Ищем пользователя в базе данных
+        const dbUser = await User.findOne({ chatId });
+
+        if (!dbUser) {
+            console.log(`❌ Пользователь ${chatId} не найден в базе.`);
+            return;
+        }
+
+        if (dbUser.channelAccess) {
+            // Если у пользователя есть доступ — одобряем заявку
+            await ctx.telegram.approveChatJoinRequest(ctx.chatJoinRequest.chat.id, chatId);
+            console.log(`✅ Доступ выдан: ${user.first_name} (@${user.username})`);
+        } else {
+            // Если доступа нет — отправляем уведомление
+            await ctx.telegram.sendMessage(
+                chatId,
+                `❌ Ваша заявка на вступление в канал отклонена. Оплатите подписку, чтобы получить доступ.`
+            );
+            console.log(`⛔ Доступ отклонен: ${user.first_name} (@${user.username})`);
+        }
+    } catch (error) {
+        console.error("❌ Ошибка в обработке запроса на вступление:", error);
+    }
 });
+
 
 registerPayHandlers(bot, userStates, menus);
 registerPartnerHandlers(bot, userStates, menus);
@@ -154,15 +171,63 @@ app.post('/lavaTopNormalPay', async (req, res) => {
 
 app.post('/lavaTopRegularPay', async (req, res) => {
   try {
-    console.log("req.headers = ", req.headers);
-    console.log("req.body = ", req.body);
-    const body = req.body
-    res.json({body})
+    const {status, buyer, timestamp} = req.body
+    if (status === "completed") {
+      const userEmail = buyer.email
+      
+      const user = await User.findOne({ email: userEmail });
+
+      if (!user) {
+        return res.status(404).json({ error: "Пользователь не найден" });
+      }
+
+      // Обновить пользователя в базе данных
+      user.channelAccess = true;
+      user.payData.date = new Date(timestamp); // Преобразуем в объект Date
+
+      await user.save();
+      await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+        chat_id: chatId,
+        text: `Нажмите, чтобы присоединиться: https://t.me/+IeH_W-Dbbyg3ZTJi`
+    });
+
+      return res.json({ message: "Оплата подтверждена, доступ выдан" });
+    }
+    res.json({ message: "Статус не 'completed', обновление не требуется" });
   } catch (error) {
     console.error('Ошибка в lavaTest:', error);
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
   }
 });
+
+async function giveChannelAccess(chatId) {
+    if (!chatId) {
+        console.log("❌ Ошибка: chatId отсутствует.");
+        return;
+    }
+
+    try {
+        // Генерируем инвайт-ссылку (если канал приватный)
+        const inviteLinkResponse = await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/exportChatInviteLink`, {
+            chat_id: process.env.CHANNEL_ID
+        });
+
+        const inviteLink = inviteLinkResponse.data.result;
+
+        // Отправляем пользователю ссылку-приглашение
+        await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+            chat_id: chatId,
+            text: `✅ Вам выдан доступ к каналу! Нажмите, чтобы присоединиться: ${inviteLink}`
+        });
+
+        console.log(`✅ Доступ выдан: ${chatId}`);
+    } catch (error) {
+        console.error("❌ Ошибка при выдаче доступа:", error.response?.data || error.message);
+    }
+}
+
+module.exports = { giveChannelAccess };
+
 
 const PORT = process.env.PORT || 3006;
 app.listen(PORT, async () => {
