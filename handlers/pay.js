@@ -34,7 +34,7 @@ const registerPayHandlers = (bot, userStates, menus) => {
           reply_markup: {
             inline_keyboard: [
               [{ text: 'Картой (любая валюта)', web_app: { url: paymentUrl } }],
-              [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+              // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
               [{ text: 'Договор оферты', callback_data: 'offer' }],
               [{ text: 'Назад', callback_data: 'back' }],
             ],
@@ -65,7 +65,7 @@ const registerPayHandlers = (bot, userStates, menus) => {
           reply_markup: {
             inline_keyboard: [
               [{ text: 'Картой (любая валюта)', web_app: { url: paymentUrl } }],
-              [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+              // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
               [{ text: 'Договор оферты', callback_data: 'offer' }],
               [{ text: 'Назад', callback_data: 'back' }],
             ],
@@ -96,7 +96,7 @@ const registerPayHandlers = (bot, userStates, menus) => {
           reply_markup: {
             inline_keyboard: [
               [{ text: 'Картой (любая валюта)', web_app: { url: paymentUrl } }],
-              [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
+              // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
               [{ text: 'Договор оферты', callback_data: 'offer' }],
               [{ text: 'Назад', callback_data: 'back' }],
             ],
