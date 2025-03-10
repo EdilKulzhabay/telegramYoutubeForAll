@@ -149,6 +149,8 @@ app.post('/lavaTopNormalPay', async (req, res) => {
         if (!user) {
           return res.status(404).json({ error: "Пользователь не найден" });
         }
+
+        const chatId = user.chatId
   
         // Обновить пользователя в базе данных
         user.channelAccess = true;
