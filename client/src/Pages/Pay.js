@@ -20,18 +20,15 @@ export default function Pay() {
         const currency = paymentMethod === "bank_rf" ? "RUB" : "USD";
     
         try {
-            const { data } = await api.post('https://gate.lava.top/api/v2/invoice', {
+            const response = await api.post('/create-invoice', {
                 email,
-                offerId: process.env.OFFER_ID, // Исправлено
                 periodicity,
                 currency,
-                // paymentMethod: "UNLIMINT"
             }, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-Api-Key": process.env.X_API_KEY, // Исправлено
-                },
+                headers: { "Content-Type": "application/json" },
             });
+            
+            const data = response.data; 
     
             if (data && data.id) {
                 const invoiceId = data.id;
