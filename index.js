@@ -234,9 +234,6 @@ app.post("/create-invoice", async (req, res) => {
           },
       });
 
-      console.log(response);
-      
-
       res.json(response.data);
   } catch (error) {
       console.error("Ошибка при создании счета:", error?.response?.data || error.message);
