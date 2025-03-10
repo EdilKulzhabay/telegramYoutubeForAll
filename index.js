@@ -135,30 +135,6 @@ const checkApiKey = (req, res, next) => {
   next();
 };
 
-app.post('/updateUser', async (req, res) => {
-  try {
-    const {chatId, email} = req.body
-    const user = await User.findOne({chatId})
-
-    if (!user) {
-      const newUser = new User({
-        chatId,
-        email
-      })
-
-      await newUser.save()
-    }
-
-    user.email = email
-
-    await user.save()
-
-    res.json({success: true})
-  } catch (error) {
-    console.error('Ошибка в lavaTest:', error);
-    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
-  }
-})
 
 app.post('/lavaTopNormalPay', async (req, res) => {
   try {
@@ -202,6 +178,33 @@ app.post('/lavaTopRegularPay', async (req, res) => {
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
   }
 });
+
+app.post("/create-invoice", async (req, res) => {
+  try {
+      const { email, periodicity, currency } = req.body;
+      
+      const response = await axios.post("https://gate.lava.top/api/v2/invoice", {
+          email,
+          offerId: process.env.OFFER_ID,
+          periodicity,
+          currency,
+      }, {
+          headers: {
+              "Content-Type": "application/json",
+              "X-Api-Key": process.env.X_API_KEY,
+          },
+      });
+
+      console.log(response);
+      
+
+      res.json(response.data);
+  } catch (error) {
+      console.error("Ошибка при создании счета:", error?.response?.data || error.message);
+      res.status(500).json({ error: "Ошибка при создании счета" });
+  }
+});
+
 
 async function giveChannelAccess(chatId) {
     if (!chatId) {
