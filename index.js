@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const axios = require('axios')
 const { menus } = require('./menus.js');
 const { registerPayHandlers } = require('./handlers/pay.js');
 const { registerPartnerHandlers } = require('./handlers/partner.js');
