@@ -14,13 +14,13 @@ export default function Pay() {
             headers: { "Content-Type": "application/json" },
         });
         let periodicity = ""
-        if (period === 1) {
+        if (period === "1") {
             periodicity = "MONTHLY"
         }
-        if (period === 3) {
+        if (period === "3") {
             periodicity = "PERIOD_90_DAYS"
         }
-        if (period === 12) {
+        if (period === "12") {
             periodicity = "PERIOD_YEAR"
         }
         const currency = paymentMethod === "bank_rf" ? "RUB" : "USD";
