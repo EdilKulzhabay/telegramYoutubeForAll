@@ -11,7 +11,7 @@ const menus = {
       reply_markup: {
         inline_keyboard: [
           [{ text: 'Оплатить доступ', callback_data: 'payAccess' }],
-          [{ text: 'Подробнее о канале', callback_data: 'aboutChannel' }],
+          // [{ text: 'Подробнее о канале', callback_data: 'aboutChannel' }],
           // [{ text: 'Меню партнера', callback_data: 'partnerMenu' }],
           // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
           // [{ text: 'Подарить БАЗУ', callback_data: 'donateBase' }],
