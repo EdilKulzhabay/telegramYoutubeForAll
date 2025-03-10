@@ -240,9 +240,13 @@ app.post("/updateUser", async (req, res) => {
 
     const user = await User.findOne({chatId})
 
+    console.log("user = ", user);
+
     user.email = email
 
     await user.save()
+
+    res.json({message: "success"})
   } catch (error) {
     console.error('Ошибка в lavaTest:', error);
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
@@ -259,6 +263,7 @@ app.post("/updateUserInvoiceId", async (req, res) => {
     user.invoiceId = invoiceId
 
     await user.save()
+    res.json({message: "success"})
   } catch (error) {
     console.error('Ошибка в lavaTest:', error);
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
