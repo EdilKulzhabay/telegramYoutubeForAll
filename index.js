@@ -139,10 +139,34 @@ const checkApiKey = (req, res, next) => {
 
 app.post('/lavaTopNormalPay', async (req, res) => {
   try {
-    console.log("req.headers = ", req.headers);
-    console.log("req.body = ", req.body);
-    const body = req.body
-    res.json({body})
+    try {
+      const {status, buyer, timestamp} = req.body
+      if (status === "completed") {
+        const userEmail = buyer.email
+        
+        const user = await User.findOne({ email: userEmail });
+  
+        if (!user) {
+          return res.status(404).json({ error: "Пользователь не найден" });
+        }
+  
+        // Обновить пользователя в базе данных
+        user.channelAccess = true;
+        user.payData.date = new Date(timestamp); // Преобразуем в объект Date
+  
+        await user.save();
+        await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+          chat_id: chatId,
+          text: `Нажмите, чтобы присоединиться: https://t.me/+IeH_W-Dbbyg3ZTJi`
+      });
+  
+        return res.json({ message: "Оплата подтверждена, доступ выдан" });
+      }
+      res.json({ message: "Статус не 'completed', обновление не требуется" });
+    } catch (error) {
+      console.error('Ошибка в lavaTest:', error);
+      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
   } catch (error) {
     console.error('Ошибка в lavaTest:', error);
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
