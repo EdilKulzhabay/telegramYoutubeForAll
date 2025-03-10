@@ -8,8 +8,10 @@ export default function Pay() {
     const [paymentMethod, setPaymentMethod] = useState("foreign_bank");
     const [email, setEmail] = useState("")
     const [step, setStep] = useState(1)
+    const [loading, setLoading] = useState(false)
 
     const handleClick = async () => {
+        setLoading(true)
         await api.post("/updateUser", { chatId, email, period }, {
             headers: { "Content-Type": "application/json" },
         });
@@ -50,6 +52,8 @@ export default function Pay() {
             }
         } catch (error) {
             console.error("Ошибка при создании счета:", error);
+        } finally {
+            setLoading(false);
         }
     };
     
@@ -127,8 +131,12 @@ export default function Pay() {
                 
                 {/* Кнопки */}
                 <div className="w-full max-w-md mt-6">
-                    <button className="w-full bg-white text-black font-semibold py-3 rounded-lg mb-3" onClick={handleClick}>
-                    Перейти к оплате
+                    <button
+                        className="w-full bg-white text-black font-semibold py-3 rounded-lg mb-3 flex items-center justify-center"
+                        onClick={handleClick}
+                        disabled={loading}
+                    >
+                        {loading ? <span className="loader"></span> : "Перейти к оплате"}
                     </button>
                     <button className="w-full text-white text-sm" onClick={() => {setStep(1)}}>Вернуться назад</button>
                 </div>
