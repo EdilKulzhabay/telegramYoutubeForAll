@@ -225,6 +225,8 @@ app.post("/create-invoice", async (req, res) => {
       }
 
       console.log("data in create-invoice = ", data);
+
+
       
       
       const response = await axios.post("https://gate.lava.top/api/v2/invoice", {...data}, {
@@ -233,6 +235,8 @@ app.post("/create-invoice", async (req, res) => {
               "X-Api-Key": process.env.X_API_KEY,
           },
       });
+
+      console.log("response in create-invoice = ", response.data);
 
       res.json(response.data);
   } catch (error) {
