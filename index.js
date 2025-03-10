@@ -2,6 +2,7 @@ const { Telegraf } = require('telegraf');
 const mongoose = require('mongoose');
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const { menus } = require('./menus.js');
 const { registerPayHandlers } = require('./handlers/pay.js');
 const { registerPartnerHandlers } = require('./handlers/partner.js');
