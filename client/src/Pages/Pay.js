@@ -7,12 +7,10 @@ export default function Pay() {
     const { chatId, period } = useParams()
     const [paymentMethod, setPaymentMethod] = useState("foreign_bank");
     const [email, setEmail] = useState("")
-    const navigate = useNavigate();
-
     const [step, setStep] = useState(1)
 
     const handleClick = async () => {
-        await api.post("/updateUser", { chatId, email }, {
+        await api.post("/updateUser", { chatId, email, period }, {
             headers: { "Content-Type": "application/json" },
         });
     
