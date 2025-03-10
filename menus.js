@@ -1,6 +1,6 @@
 const { 
     start, basePrice, aboutChannel, partnerMenu, donateBase, 
-    oneMonth, sixMonths, twelveMonths, USDT, forFriends, 
+    oneMonth, threeMonthss, twelveMonths, USDT, forFriends, 
     makeContent, referralLinkText2, referralLinkText1, 
     statistics, getMoney, donateText 
 } = require('./messages.js');
@@ -26,7 +26,7 @@ const menus = {
       reply_markup: {
         inline_keyboard: [
           [{ text: '1 месяц', callback_data: 'oneMonth' }],
-          [{ text: '6 месяцев', callback_data: 'sixMonths' }],
+          [{ text: '3 месяцев', callback_data: 'threeMonthss' }],
           [{ text: '12 месяцев', callback_data: 'twelveMonths' }],
           [{ text: 'Назад', callback_data: 'back' }],
         ],
@@ -46,8 +46,8 @@ const menus = {
         },
     },
 
-    sixMonths: {
-        text: sixMonths, // Можно заменить на другой текст, если нужно
+    threeMonthss: {
+        text: threeMonthss, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
             [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
@@ -166,7 +166,7 @@ const menus = {
       reply_markup: {
         inline_keyboard: [
           [{ text: '1 месяц', callback_data: 'oneMonthDonate' }],
-          [{ text: '6 месяцев', callback_data: 'sixMonthsDonate' }],
+          [{ text: '3 месяцев', callback_data: 'threeMonthssDonate' }],
           [{ text: '12 месяцев', callback_data: 'twelveMonthsDonate' }],
           [{ text: 'Назад', callback_data: 'back' }],
         ],
@@ -186,7 +186,7 @@ const menus = {
         },
     },
 
-    sixMonthsDonate: {
+    threeMonthssDonate: {
         text: donateText, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [

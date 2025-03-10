@@ -27,16 +27,16 @@ const registerDonateHandlers = (bot, userStates, menus) => {
       }
     });
   
-    bot.action('sixMonthsDonate', async (ctx) => {
+    bot.action('threeMonthssDonate', async (ctx) => {
       const chatId = ctx.chat.id;
       const state = userStates.get(chatId) || { currentMenu: 'start', history: [] };
       state.history.push(state.currentMenu);
-      state.currentMenu = 'sixMonthsDonate';
+      state.currentMenu = 'threeMonthssDonate';
       userStates.set(chatId, state);
       try {
-        await ctx.reply(menus.sixMonthsDonate.text, menus.sixMonthsDonate);
+        await ctx.reply(menus.threeMonthssDonate.text, menus.threeMonthssDonate);
       } catch (error) {
-        console.error('Error in sixMonthsDonate:', error);
+        console.error('Error in threeMonthssDonate:', error);
         ctx.reply('Произошла ошибка, попробуйте снова.');
       }
     });

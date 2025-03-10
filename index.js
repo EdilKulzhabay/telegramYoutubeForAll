@@ -115,6 +115,31 @@ const checkApiKey = (req, res, next) => {
   next();
 };
 
+app.post('/updateUser', async (req, res) => {
+  try {
+    const {chatId, email} = req.body
+    const user = await User.findOne({chatId})
+
+    if (!user) {
+      const newUser = new User({
+        chatId,
+        email
+      })
+
+      await newUser.save()
+    }
+
+    user.email = email
+
+    await user.save()
+
+    res.json({success: true})
+  } catch (error) {
+    console.error('Ошибка в lavaTest:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
+})
+
 app.post('/lavaTopNormalPay', async (req, res) => {
   try {
     console.log("req.headers = ", req.headers);
