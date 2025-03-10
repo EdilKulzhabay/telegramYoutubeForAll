@@ -119,11 +119,13 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-      origin: "*",
-  })
-);
+const corsOptions = {
+  origin: '*', // Можно заменить на конкретный домен, если требуется безопасность
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: 'Content-Type,Authorization,x-api-key'
+};
+
+app.use(cors(corsOptions));
 app.use(bot.webhookCallback('/bot'));
 
 const API_KEY = process.env.API_KEY;
