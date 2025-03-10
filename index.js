@@ -183,12 +183,21 @@ app.post('/lavaTopRegularPay', async (req, res) => {
 app.post("/create-invoice", async (req, res) => {
   try {
       const { email, periodicity, currency } = req.body;
+
+      let paymentMethod = ""
+
+      if (currency === "USD") {
+        paymentMethod = "UNLIMINT"
+      } else {
+        paymentMethod = "BANK131"
+      }
       
       const response = await axios.post("https://gate.lava.top/api/v2/invoice", {
           email,
           offerId: process.env.OFFER_ID,
           periodicity,
           currency,
+          paymentMethod
       }, {
           headers: {
               "Content-Type": "application/json",

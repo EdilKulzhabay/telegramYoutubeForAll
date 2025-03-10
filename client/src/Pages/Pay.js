@@ -5,7 +5,7 @@ import api from "../api";
 
 export default function Pay() {
     const { chatId, period } = useParams()
-    const [paymentMethod, setPaymentMethod] = useState("bank_rf");
+    const [paymentMethod, setPaymentMethod] = useState("foreign_bank");
     const [email, setEmail] = useState("")
     const navigate = useNavigate();
 
@@ -67,21 +67,21 @@ export default function Pay() {
                 </div> */}
             
                 <h2 className="text-lg font-bold mb-4">Наименование товара</h2>
-                <p className="mb-4">YouTube для ВСЕХ / {period} мес.</p>
+                <p className="mb-4">Образовательное сообщество «YouTube для ВСЕХ» / {period} мес.</p>
                 
                 <h2 className="text-lg font-bold mb-4">Метод оплаты</h2>
                 <div className="flex gap-2 mb-4">
+                <button
+                    className={`flex-1 p-3 rounded-lg ${paymentMethod === "foreign_bank" ? "bg-gray-700" : "bg-gray-800"}`}
+                    onClick={() => setPaymentMethod("foreign_bank")}
+                    >
+                    Иностранный банк
+                    </button>
                     <button
                     className={`flex-1 p-3 rounded-lg ${paymentMethod === "bank_rf" ? "bg-gray-700" : "bg-gray-800"}`}
                     onClick={() => setPaymentMethod("bank_rf")}
                     >
                     Банк РФ
-                    </button>
-                    <button
-                    className={`flex-1 p-3 rounded-lg ${paymentMethod === "foreign_bank" ? "bg-gray-700" : "bg-gray-800"}`}
-                    onClick={() => setPaymentMethod("foreign_bank")}
-                    >
-                    Иностранный банк
                     </button>
                 </div>
             
@@ -103,7 +103,7 @@ export default function Pay() {
                 <div className="w-full max-w-md bg-gray-800 p-4 rounded-lg">
                     <div className="mb-2">
                     <p className="text-gray-400 text-sm">Наименование товара</p>
-                    <p className="text-white">YouTube для ВСЕХ / {period} мес.</p>
+                    <p className="text-white">Образовательное сообщество «YouTube для ВСЕХ» / {period} мес.</p>
                     </div>
                     <div className="mb-2">
                     <p className="text-gray-400 text-sm">Метод оплаты</p>
