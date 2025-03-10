@@ -13,8 +13,16 @@ export default function Pay() {
         await api.post("/updateUser", { chatId, email, period }, {
             headers: { "Content-Type": "application/json" },
         });
-    
-        const periodicity = period === 1 ? "MONTHLY" : period === 3 ? "PERIOD_90_DAYS" : "PERIOD_YEAR";
+        let periodicity = ""
+        if (period === 1) {
+            periodicity = "MONTHLY"
+        }
+        if (period === 3) {
+            periodicity = "PERIOD_90_DAYS"
+        }
+        if (period === 12) {
+            periodicity = "PERIOD_YEAR"
+        }
         const currency = paymentMethod === "bank_rf" ? "RUB" : "USD";
     
         try {
