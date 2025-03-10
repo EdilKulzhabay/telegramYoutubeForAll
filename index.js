@@ -191,14 +191,19 @@ app.post("/create-invoice", async (req, res) => {
       } else {
         paymentMethod = "BANK131"
       }
+
+      const data = {
+        email,
+        offerId: process.env.OFFER_ID,
+        periodicity,
+        currency,
+        paymentMethod
+      }
+
+      console.log("data in create-invoice = ", data);
       
-      const response = await axios.post("https://gate.lava.top/api/v2/invoice", {
-          email,
-          offerId: process.env.OFFER_ID,
-          periodicity,
-          currency,
-          paymentMethod
-      }, {
+      
+      const response = await axios.post("https://gate.lava.top/api/v2/invoice", {...data}, {
           headers: {
               "Content-Type": "application/json",
               "X-Api-Key": process.env.X_API_KEY,
