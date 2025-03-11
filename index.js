@@ -88,8 +88,6 @@ bot.hears('Подробнее', async (ctx) => {
   }
 });
 
-
-
 bot.on("chat_join_request", async (ctx) => {
     try {
         const user = ctx.chatJoinRequest.from;
@@ -136,6 +134,8 @@ bot.on("chat_join_request", async (ctx) => {
         console.error("❌ Ошибка в обработке запроса на вступление:", error);
     }
 });
+
+
 
 async function isUserBanned(chatId, userId) {
   try {
@@ -187,7 +187,6 @@ const checkApiKey = (req, res, next) => {
   }
   next();
 };
-
 
 app.post('/lavaTopNormalPay', async (req, res) => {
   try {
@@ -348,66 +347,6 @@ app.get("/getProducts", async (req, res) => {
   }
 });
 
-const invoiceStatusChecks = {};
-
-function startInvoiceStatusCheck(invoiceId) {
-  if (invoiceStatusChecks[invoiceId]) return; // Чтобы не запустить повторно
-
-  invoiceStatusChecks[invoiceId] = setInterval(async () => {
-    try {
-      const response = await axios.get(
-        `https://gate.lava.top/api/v1/invoices/${invoiceId}`,
-        {
-          headers: {
-            "X-Api-Key": process.env.X_API_KEY,
-          },
-        }
-      );
-
-      console.log(`Статус счета ${invoiceId}:`, response.data.status);
-
-      if (response.data.status === "COMPLETED") {
-        const user = await User.findOne({ invoiceId });
-
-        if (!user) {
-          console.error(`Пользователь с invoiceId ${invoiceId} не найден`);
-          return;
-        }
-
-        const chatId = user.chatId;
-
-        // Обновить пользователя в базе данных
-        user.channelAccess = true;
-        user.payData.date = new Date(); // Используем текущую дату
-
-        const isBanned = await isUserBanned("-1002404499058_1", chatId)
-
-        if (isBanned) {
-          await unbanUser("-1002404499058_1", chatId)
-        }
-
-        await user.save();
-        await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
-          chat_id: chatId,
-          text: `Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi`
-        });
-
-        clearInterval(invoiceStatusChecks[invoiceId]);
-        delete invoiceStatusChecks[invoiceId];
-        console.log(`Остановка проверки для счета ${invoiceId} успешно`);
-      }
-
-      if (response.data.status === "CANCELLED" || response.data.status === "FAILED") {
-        clearInterval(invoiceStatusChecks[invoiceId]);
-        delete invoiceStatusChecks[invoiceId];
-        console.log(`Остановка проверки для счета ${invoiceId} с ошибкой`);
-      }
-    } catch (error) {
-      console.error(`Ошибка проверки статуса счета ${invoiceId}:`, error.message);
-    }
-  }, 3 * 60 * 1000); // 10 минут
-}
-
 app.post("/unban", async (req, res) => {
   try {
       await unbanUser("-1002404499058_1", "1308683371")
@@ -421,32 +360,6 @@ app.post("/unban", async (req, res) => {
       res.status(500).json({ error: "Ошибка при создании счета" });
   }
 });
-
-async function giveChannelAccess(chatId) {
-    if (!chatId) {
-        console.log("❌ Ошибка: chatId отсутствует.");
-        return;
-    }
-
-    try {
-        // Генерируем инвайт-ссылку (если канал приватный)
-        const inviteLinkResponse = await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/exportChatInviteLink`, {
-            chat_id: process.env.CHANNEL_ID
-        });
-
-        const inviteLink = inviteLinkResponse.data.result;
-
-        // Отправляем пользователю ссылку-приглашение
-        await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
-            chat_id: chatId,
-            text: `✅ Вам выдан доступ к каналу! Нажмите, чтобы присоединиться: ${inviteLink}`
-        });
-
-        console.log(`✅ Доступ выдан: ${chatId}`);
-    } catch (error) {
-        console.error("❌ Ошибка при выдаче доступа:", error.response?.data || error.message);
-    }
-}
 
 app.post("/updateUser", async (req, res) => {
   try {
@@ -485,7 +398,6 @@ app.post("/updateUserInvoiceId", async (req, res) => {
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
   }
 })
-
 
 const PORT = process.env.PORT || 3006;
 app.listen(PORT, async () => {

@@ -37,7 +37,7 @@ const menus = {
         text: oneMonth, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
+            [{ text: 'Картой (любая валюта)', url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
@@ -50,7 +50,7 @@ const menus = {
         text: threeMonthss, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
+            [{ text: 'Картой (любая валюта)', url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
@@ -63,7 +63,7 @@ const menus = {
         text: twelveMonths, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
+            [{ text: 'Картой (любая валюта)', url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
