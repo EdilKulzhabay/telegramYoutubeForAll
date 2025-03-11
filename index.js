@@ -36,52 +36,56 @@ const generateReferralLink = (chatId) => {
 
 bot.start(async (ctx) => {
   const chatId = ctx.chat.id.toString();
-  const args = ctx.startPayload;
 
   try {
-    let user = await User.findOne({ chatId });
+      let user = await User.findOne({ chatId });
 
-    if (!user) {
-      user = new User({
-        chatId,
-        refferal: generateReferralLink(chatId),
-      });
-      await user.save();
-    }
-
-    if (args && args.startsWith('ref_')) {
-      const referrerChatId = args.split('ref_')[1];
-      if (referrerChatId !== chatId) {
-        const referrer = await User.findOne({ chatId: referrerChatId });
-        if (referrer) {
-          referrer.refferalBonus += 1;
-          await referrer.save();
-          await ctx.reply(`Вы зашли по реферальной ссылке! Пригласившему начислен бонус.`);
-        }
+      if (!user) {
+          user = new User({
+              chatId,
+              currentMenu: 'start',
+              history: [],
+          });
+          await user.save();
+      } else {
+          // Обновляем пользователя, если он уже существует
+          user.currentMenu = 'start';
+          user.history = [];
+          await user.save();
       }
-    }
 
-    userStates.set(chatId, {
-      currentMenu: 'start',
-      history: [],
-    });
-
-    await ctx.reply(menus.start.text, menus.start);
+      await ctx.replyWithVideo(
+        { source: './videos/start.mp4' }, // Локальный файл
+        { caption: menus.start.text, reply_markup: menus.start.reply_markup }
+      );
   } catch (error) {
-    console.error('Error in /start:', error);
-    await ctx.reply('Произошла ошибка, попробуйте снова.');
+      console.error('Ошибка в /start:', error);
+      await ctx.reply('Произошла ошибка, попробуйте снова.');
   }
 });
 
 bot.hears('Подробнее', async (ctx) => {
   try {
       const chatId = ctx.chat.id.toString();
-      userStates.set(chatId, {
-          currentMenu: 'start',
-          history: [],
-      });
+      let user = await User.findOne({ chatId });
 
-      await ctx.reply(menus.start.text, menus.start);
+      if (!user) {
+          user = new User({
+              chatId,
+              currentMenu: 'start',
+              history: [],
+          });
+          await user.save();
+      } else {
+          user.currentMenu = 'start';
+          user.history = [];
+          await user.save();
+      }
+
+      await ctx.replyWithVideo(
+        { source: './videos/start.mp4' }, // Локальный файл
+        { caption: menus.start.text, reply_markup: menus.start.reply_markup }
+      );
   } catch (error) {
       console.error('Ошибка в обработчике "Подробнее":', error);
       await ctx.reply('Произошла ошибка, попробуйте снова.');
