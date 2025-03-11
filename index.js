@@ -361,7 +361,7 @@ app.post("/unban", async (req, res) => {
   try {
       await unbanUser("-1002404499058_1", "1308683371")
       await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
-        chat_id: chatId,
+        chat_id: "1308683371",
         text: `Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi`
       });
       res.json(response.data);
