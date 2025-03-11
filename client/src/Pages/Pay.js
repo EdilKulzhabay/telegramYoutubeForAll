@@ -17,7 +17,8 @@ export default function Pay() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const products = await api.get("/getProducts");
+                const response = await api.get("/getProducts");
+                const products = response.items
 
                 const product = products
                     .flatMap(p => p.offers)
