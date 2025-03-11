@@ -130,6 +130,25 @@ bot.on("chat_join_request", async (ctx) => {
     }
 });
 
+async function isUserBanned(chatId, userId) {
+  try {
+      const member = await bot.telegram.getChatMember(chatId, userId);
+      return member.status === 'kicked'; // true, если в бане
+  } catch (error) {
+      console.error("Ошибка при проверке статуса пользователя:", error);
+      return false;
+  }
+}
+
+
+async function unbanUser(chatId, userId) {
+  try {
+      await bot.telegram.unbanChatMember(chatId, userId);
+      console.log(`✅ Пользователь ${userId} разбанен в группе ${chatId}`);
+  } catch (error) {
+      console.error("Ошибка при разбане пользователя:", error);
+  }
+}
 
 registerPayHandlers(bot, userStates, menus);
 registerPartnerHandlers(bot, userStates, menus);
@@ -167,6 +186,7 @@ app.post('/lavaTopNormalPay', async (req, res) => {
   try {
     try {
       const {status, buyer, timestamp} = req.body
+      console.log("req.body in lavaTopNormalPay = ", req.body);
       if (status === "completed") {
         const userEmail = buyer.email
         
@@ -204,6 +224,8 @@ app.post('/lavaTopNormalPay', async (req, res) => {
 app.post('/lavaTopRegularPay', async (req, res) => {
   try {
     const {status, buyer, timestamp} = req.body
+    console.log("req.body in lavaTopRegularPay = ", req.body);
+    
     if (status === "completed") {
       const userEmail = buyer.email
       
@@ -306,6 +328,12 @@ function startInvoiceStatusCheck(invoiceId) {
         // Обновить пользователя в базе данных
         user.channelAccess = true;
         user.payData.date = new Date(); // Используем текущую дату
+
+        // const isBanned = await isUserBanned("-1002404499058_1", chatId)
+
+        // if (isBanned) {
+        //   await unbanUser("-1002404499058_1", chatId)
+        // }
 
         await user.save();
         await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
