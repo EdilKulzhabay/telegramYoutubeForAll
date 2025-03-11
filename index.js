@@ -364,9 +364,9 @@ app.post("/unban", async (req, res) => {
         chat_id: "1308683371",
         text: `Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi`
       });
-      res.json(response.data);
+      res.json({success: "unban!!!!"});
   } catch (error) {
-      console.error("Ошибка при создании счета:", error?.response?.data || error.message);
+      console.error("Ошибка при unban");
       res.status(500).json({ error: "Ошибка при создании счета" });
   }
 });
