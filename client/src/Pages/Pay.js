@@ -15,17 +15,6 @@ export default function Pay() {
     const productId = "6a336c2b-7992-40d7-8829-67159d4cd3c5";
 
     useEffect(() => {
-        const handleResize = () => {
-            document.documentElement.style.setProperty("--app-height", `${window.innerHeight}px`);
-        };
-
-        window.addEventListener("resize", handleResize);
-        handleResize();
-
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
-
-    useEffect(() => {
         const fetchProduct = async () => {
             try {
                 const response = await api.get("/getProducts");
@@ -117,9 +106,7 @@ export default function Pay() {
     };
     
 
-    return <div className="flex items-center justify-center min-h-screen bg-black text-white p-4"
-    style={{ minHeight: "var(--app-height)" }} 
-    >
+    return <div className="flex items-center justify-center min-h-screen bg-black text-white p-4">
         {step === 1 ? 
             <div className="w-full max-w-md bg-gray-900 p-6 rounded-xl shadow-lg">
                 {/* <div className="flex justify-between items-center mb-6">
