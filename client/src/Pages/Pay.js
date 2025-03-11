@@ -85,7 +85,7 @@ export default function Pay() {
                     className={`flex-1 p-3 rounded-lg ${paymentMethod === "foreign_bank" ? "bg-gray-700" : "bg-gray-800"}`}
                     onClick={() => setPaymentMethod("foreign_bank")}
                     >
-                    Иностранный банк
+                    Любой банк
                     </button>
                     <button
                     className={`flex-1 p-3 rounded-lg ${paymentMethod === "bank_rf" ? "bg-gray-700" : "bg-gray-800"}`}
@@ -117,7 +117,7 @@ export default function Pay() {
                     </div>
                     <div className="mb-2">
                     <p className="text-gray-400 text-sm">Метод оплаты</p>
-                    <p className="text-white">{paymentMethod === "bank_rf" ? "Банк РФ" : "Иностранный банк"}</p>
+                    <p className="text-white">{paymentMethod === "bank_rf" ? "Банк РФ" : "Любой банк"}</p>
                     </div>
                     <div className="mb-2">
                     <p className="text-gray-400 text-sm">Ваш E-mail</p>
