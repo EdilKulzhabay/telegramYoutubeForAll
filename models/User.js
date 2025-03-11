@@ -34,7 +34,9 @@ const UserSchema = new mongoose.Schema(
         invoiceId: {
             type: String,
             default: ""
-        }
+        },
+        currentMenu: { type: String, default: 'start' },  // Текущий экран меню
+        history: { type: [String], default: [] } 
     },
     {
         timestamps: true

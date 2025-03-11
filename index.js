@@ -157,11 +157,11 @@ async function unbanUser(chatId, userId) {
   }
 }
 
-registerPayHandlers(bot, userStates, menus);
+registerPayHandlers(bot, menus);
 registerPartnerHandlers(bot, userStates, menus);
 registerDonateHandlers(bot, userStates, menus);
 registerAboutHandlers(bot, userStates, menus);
-registerCommonHandlers(bot, userStates, menus);
+registerCommonHandlers(bot, menus);
 
 bot.launch().then(() => {
   console.log('Бот запущен!');
