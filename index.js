@@ -189,7 +189,12 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "*", // Можно поставить "*" для всех источников, но это небезопасно
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
+  allowedHeaders: "Content-Type,Authorization",
+  credentials: true
+}));
 
 app.use(bot.webhookCallback('/bot'));
 
