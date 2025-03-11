@@ -271,14 +271,15 @@ function startInvoiceStatusCheck(invoiceId) {
         const user = await User.findOne({ invoiceId });
 
         if (!user) {
-          return res.status(404).json({ error: "Пользователь не найден" });
+          console.error(`Пользователь с invoiceId ${invoiceId} не найден`);
+          return;
         }
 
-        const chatId = user.chatId
+        const chatId = user.chatId;
 
         // Обновить пользователя в базе данных
         user.channelAccess = true;
-        user.payData.date = new Date(timestamp); // Преобразуем в объект Date
+        user.payData.date = new Date(); // Используем текущую дату
 
         await user.save();
         await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
