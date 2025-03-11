@@ -117,7 +117,7 @@ bot.on("chat_join_request", async (ctx) => {
             if (isBanned) {
               await unbanUser("-1002404499058_1", chatId)
             }
-            await ctx.telegram.declineChatJoinRequest(ctx.chatJoinRequest.chat.id, chatId);
+            await ctx.telegram.declineChatJoinRequest("-1002404499058_1", chatId);
             await ctx.telegram.sendMessage(
                 chatId,
                 `Для доступа к Образовательному сообществу "YouTube для ВСЕХ" вам необходимо оформить подписку.`,
