@@ -75,20 +75,19 @@ bot.start(async (ctx) => {
 
 bot.hears('Подробнее', async (ctx) => {
   try {
-      await ctx.answerCbQuery(); // Закрывает "загрузка" у кнопки
-
       const chatId = ctx.chat.id.toString();
       userStates.set(chatId, {
           currentMenu: 'start',
           history: [],
       });
 
-      await ctx.editMessageText(menus.start.text, menus.start);
+      await ctx.reply(menus.start.text, menus.start);
   } catch (error) {
-      console.error('Ошибка в обработчике start:', error);
+      console.error('Ошибка в обработчике "Подробнее":', error);
       await ctx.reply('Произошла ошибка, попробуйте снова.');
   }
 });
+
 
 
 bot.on("chat_join_request", async (ctx) => {
