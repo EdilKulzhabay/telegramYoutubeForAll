@@ -73,7 +73,7 @@ bot.start(async (ctx) => {
   }
 });
 
-bot.action('more', async (ctx) => {
+bot.hears('Подробнее', async (ctx) => {
   try {
       await ctx.answerCbQuery(); // Закрывает "загрузка" у кнопки
 
@@ -124,7 +124,7 @@ bot.on("chat_join_request", async (ctx) => {
               {
                   reply_markup: {
                       keyboard: [
-                          [{ text: "Оформить подписку" }]
+                          [{ text: "Подробнее" }]
                       ],
                       resize_keyboard: true,
                       one_time_keyboard: true
