@@ -18,6 +18,8 @@ export default function Pay() {
         const fetchProduct = async () => {
             try {
                 const response = await api.get("/getProducts");
+                console.log("response in Pay = ", response);
+                
                 const products = response.items
 
                 const product = products
