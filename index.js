@@ -11,6 +11,7 @@ const { registerDonateHandlers } = require('./handlers/donate.js');
 const { registerAboutHandlers } = require('./handlers/about.js');
 const { registerCommonHandlers } = require('./handlers/common.js');
 const User = require('./models/User.js');
+const EventHistory = require('./models/EventHistory.js');
 
 dotenv.config();
 
@@ -192,6 +193,11 @@ app.post('/lavaTopNormalPay', async (req, res) => {
     try {
       const {status, buyer, timestamp} = req.body
       console.log("req.body in lavaTopNormalPay = ", req.body);
+      await EventHistory.create({
+        eventType: req.body.eventType,
+        timestamp: new Date(req.body.timestamp || Date.now()), // Используем timestamp, если есть
+        rawData: req.body // Полностью сохраняем весь req.body
+      });
       if (status === "subscription-active") {
         const userEmail = buyer.email
         
@@ -238,6 +244,11 @@ app.post('/lavaTopRegularPay', async (req, res) => {
   try {
     const {status, buyer, timestamp} = req.body
     console.log("req.body in lavaTopRegularPay = ", req.body);
+    await EventHistory.create({
+      eventType: req.body.eventType,
+      timestamp: new Date(req.body.timestamp || Date.now()), // Используем timestamp, если есть
+      rawData: req.body // Полностью сохраняем весь req.body
+    });
     
     if (status === "subscription-active") {
       const userEmail = buyer.email
