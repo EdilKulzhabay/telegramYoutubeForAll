@@ -35,6 +35,15 @@ const generateReferralLink = (chatId) => {
 };
 
 bot.start(async (ctx) => {
+  await handleStart(ctx);
+});
+
+// Обработчик для слова "start"
+bot.hears(/^start$/i, async (ctx) => {
+  await handleStart(ctx);
+});
+
+async function handleStart(ctx) {
   const chatId = ctx.chat.id.toString();
 
   try {
@@ -48,21 +57,22 @@ bot.start(async (ctx) => {
           });
           await user.save();
       } else {
-          // Обновляем пользователя, если он уже существует
           user.currentMenu = 'start';
           user.history = [];
           await user.save();
       }
 
-      await ctx.replyWithVideo(
-        { source: './videos/WOW.mp4' }, // Локальный файл
-        { caption: menus.start.text, reply_markup: menus.start.reply_markup }
+      await ctx.sendVideo(
+        "BAACAgIAAxkDAAIBYGfQc3p7nYg0HovMD9mwfLzJWH6BAAIgcQACnHKIShGXRjBdb6DfNgQ",
+        { caption: "Добро пожаловать! 🎬 Подробности ниже ⬇️" }
       );
+      await ctx.reply(menus.start.text, menus.start);
+
   } catch (error) {
-      console.error('Ошибка в /start:', error);
-      await ctx.reply('Произошла ошибка, попробуйте снова.');
+      console.error("Ошибка в /start:", error);
+      await ctx.reply("Произошла ошибка, попробуйте снова.");
   }
-});
+}
 
 bot.hears('Подробнее', async (ctx) => {
   try {
@@ -82,10 +92,11 @@ bot.hears('Подробнее', async (ctx) => {
           await user.save();
       }
 
-      await ctx.replyWithVideo(
-        { source: './videos/WOW.mp4' }, // Локальный файл
-        { caption: menus.start.text, reply_markup: menus.start.reply_markup }
+      await ctx.sendVideo(
+        "BAACAgIAAxkDAAIBYGfQc3p7nYg0HovMD9mwfLzJWH6BAAIgcQACnHKIShGXRjBdb6DfNgQ",
+        { caption: "Добро пожаловать! 🎬 Подробности ниже ⬇️" }
       );
+      await ctx.reply(menus.start.text, menus.start);
   } catch (error) {
       console.error('Ошибка в обработчике "Подробнее":', error);
       await ctx.reply('Произошла ошибка, попробуйте снова.');
