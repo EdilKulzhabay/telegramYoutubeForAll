@@ -59,23 +59,18 @@ export default function Pay() {
     }, [period, paymentMethod]);
 
     const handleClick = async () => {
-        setLoading(true)
-        await api.post("/updateUser", { chatId, email, period }, {
-            headers: { "Content-Type": "application/json" },
-        });
-        let periodicity = ""
-        if (period === "1") {
-            periodicity = "MONTHLY"
-        }
-        if (period === "3") {
-            periodicity = "PERIOD_90_DAYS"
-        }
-        if (period === "12") {
-            periodicity = "PERIOD_YEAR"
-        }
-        const currency = paymentMethod === "bank_rf" ? "RUB" : "USD";
-    
+        setLoading(true);
         try {
+            await api.post("/updateUser", { chatId, email, period }, {
+                headers: { "Content-Type": "application/json" },
+            });
+    
+            let periodicity = "";
+            if (period === "1") periodicity = "MONTHLY";
+            if (period === "3") periodicity = "PERIOD_90_DAYS";
+            if (period === "12") periodicity = "PERIOD_YEAR";
+            const currency = paymentMethod === "bank_rf" ? "RUB" : "USD";
+    
             const response = await api.post('/create-invoice', {
                 email,
                 periodicity,
@@ -83,8 +78,8 @@ export default function Pay() {
             }, {
                 headers: { "Content-Type": "application/json" },
             });
-            
-            const data = response.data; 
+    
+            const data = response.data;
     
             if (data && data.id) {
                 const invoiceId = data.id;
@@ -93,15 +88,20 @@ export default function Pay() {
                     headers: { "Content-Type": "application/json" },
                 });
     
-                window.location.href = data.paymentUrl;
-
+                // Снимаем фокус перед переходом
+                document.activeElement.blur();
+    
+                // Переход на страницу оплаты
+                setTimeout(() => {
+                    window.location.href = data.paymentUrl;
+                }, 100);
             } else {
                 console.error("Ошибка: data.id отсутствует", data);
             }
         } catch (error) {
             console.error("Ошибка при создании счета:", error);
         } finally {
-            setTimeout(() => setLoading(false), 2000)
+            setTimeout(() => setLoading(false), 2000);
         }
     };
     
