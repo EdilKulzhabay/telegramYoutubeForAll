@@ -20,7 +20,7 @@ export default function Pay() {
                 const response = await api.get("/getProducts");
                 console.log("response in Pay = ", response);
                 
-                const products = response.items
+                const products = response.data.items
 
                 const product = products
                     .flatMap(p => p.offers)
