@@ -99,11 +99,11 @@ bot.on("chat_join_request", async (ctx) => {
         console.log(`Запрос на вступление: ${user.first_name} (@${user.username})`);
 
         // Ищем пользователя в базе данных
-        const dbUser = await User.findOne({ chatId });
+        let dbUser = await User.findOne({ chatId });
 
         if (!dbUser) {
-            console.log(`❌ Пользователь ${chatId} не найден в базе.`);
-            return;
+          dbUser = new User({chatId, channelAccess: false})  
+          await dbUser.save()
         }
 
         if (dbUser.channelAccess) {
@@ -119,16 +119,18 @@ bot.on("chat_join_request", async (ctx) => {
             }
             await ctx.telegram.declineChatJoinRequest("-1002404499058_1", chatId);
             await ctx.telegram.sendMessage(
-                chatId,
-                `Для доступа к Образовательному сообществу "YouTube для ВСЕХ" вам необходимо оформить подписку.`,
-                {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{ text: "Подробнее", callback_data: 'more' }]
-                        ]
-                    }
-                }
-            );
+              chatId,
+              `Для доступа к Образовательному сообществу "YouTube для ВСЕХ" вам необходимо оформить подписку.`,
+              {
+                  reply_markup: {
+                      keyboard: [
+                          [{ text: "Оформить подписку" }]
+                      ],
+                      resize_keyboard: true,
+                      one_time_keyboard: true
+                  }
+              }
+          );
             console.log(`⛔ Доступ отклонен: ${user.first_name} (@${user.username})`);
         }
     } catch (error) {
