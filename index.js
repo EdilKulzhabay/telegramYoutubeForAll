@@ -284,7 +284,7 @@ function startInvoiceStatusCheck(invoiceId) {
         await user.save();
         await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
           chat_id: chatId,
-          text: `Нажмите, чтобы присоединиться: https://t.me/+IeH_W-Dbbyg3ZTJi`
+          text: `Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi`
         });
 
         clearInterval(invoiceStatusChecks[invoiceId]);
