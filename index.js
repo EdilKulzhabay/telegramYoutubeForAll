@@ -72,6 +72,24 @@ bot.start(async (ctx) => {
   }
 });
 
+bot.action('more', async (ctx) => {
+  try {
+      await ctx.answerCbQuery(); // Закрывает "загрузка" у кнопки
+
+      const chatId = ctx.chat.id.toString();
+      userStates.set(chatId, {
+          currentMenu: 'start',
+          history: [],
+      });
+
+      await ctx.editMessageText(menus.start.text, menus.start);
+  } catch (error) {
+      console.error('Ошибка в обработчике start:', error);
+      await ctx.reply('Произошла ошибка, попробуйте снова.');
+  }
+});
+
+
 bot.on("chat_join_request", async (ctx) => {
     try {
         const user = ctx.chatJoinRequest.from;
@@ -93,9 +111,17 @@ bot.on("chat_join_request", async (ctx) => {
             console.log(`✅ Доступ выдан: ${user.first_name} (@${user.username})`);
         } else {
             // Если доступа нет — отправляем уведомление
+            await ctx.telegram.declineChatJoinRequest(ctx.chatJoinRequest.chat.id, chatId);
             await ctx.telegram.sendMessage(
                 chatId,
-                `❌ Ваша заявка на вступление в канал отклонена. Оплатите подписку, чтобы получить доступ.`
+                `Для доступа к Образовательному сообществу "YouTube для ВСЕХ" вам необходимо оформить подписку.`,
+                {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: "Подробнее", callback_data: 'more' }]
+                        ]
+                    }
+                }
             );
             console.log(`⛔ Доступ отклонен: ${user.first_name} (@${user.username})`);
         }
