@@ -197,7 +197,7 @@ app.post('/lavaTopRegularPay', async (req, res) => {
       await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
         chat_id: chatId,
         text: `Нажмите, чтобы присоединиться: https://t.me/+IeH_W-Dbbyg3ZTJi`
-    });
+      });
 
       return res.json({ message: "Оплата подтверждена, доступ выдан" });
     }
@@ -230,9 +230,6 @@ app.post("/create-invoice", async (req, res) => {
 
       console.log("data in create-invoice = ", data);
 
-
-      
-      
       const response = await axios.post("https://gate.lava.top/api/v2/invoice", {...data}, {
           headers: {
               "Content-Type": "application/json",
@@ -242,12 +239,69 @@ app.post("/create-invoice", async (req, res) => {
 
       console.log("response in create-invoice = ", response.data);
 
+      const invoiceId = response.data.id;
+      startInvoiceStatusCheck(invoiceId);
+
       res.json(response.data);
   } catch (error) {
       console.error("Ошибка при создании счета:", error?.response?.data || error.message);
       res.status(500).json({ error: "Ошибка при создании счета" });
   }
 });
+
+const invoiceStatusChecks = {};
+
+function startInvoiceStatusCheck(invoiceId) {
+  if (invoiceStatusChecks[invoiceId]) return; // Чтобы не запустить повторно
+
+  invoiceStatusChecks[invoiceId] = setInterval(async () => {
+    try {
+      const response = await axios.get(
+        `https://gate.lava.top/api/v1/invoices/${invoiceId}`,
+        {
+          headers: {
+            "X-Api-Key": process.env.X_API_KEY,
+          },
+        }
+      );
+
+      console.log(`Статус счета ${invoiceId}:`, response.data.status);
+
+      if (response.data.status === "COMPLETED") {
+        const user = await User.findOne({ invoiceId });
+
+        if (!user) {
+          return res.status(404).json({ error: "Пользователь не найден" });
+        }
+
+        const chatId = user.chatId
+
+        // Обновить пользователя в базе данных
+        user.channelAccess = true;
+        user.payData.date = new Date(timestamp); // Преобразуем в объект Date
+
+        await user.save();
+        await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+          chat_id: chatId,
+          text: `Нажмите, чтобы присоединиться: https://t.me/+IeH_W-Dbbyg3ZTJi`
+        });
+
+        clearInterval(invoiceStatusChecks[invoiceId]);
+        delete invoiceStatusChecks[invoiceId];
+        console.log(`Остановка проверки для счета ${invoiceId} успешно`);
+      }
+
+      if (response.data.status === "CANCELLED" || response.data.status === "FAILED") {
+        clearInterval(invoiceStatusChecks[invoiceId]);
+        delete invoiceStatusChecks[invoiceId];
+        console.log(`Остановка проверки для счета ${invoiceId} с ошибкой`);
+      }
+    } catch (error) {
+      console.error(`Ошибка проверки статуса счета ${invoiceId}:`, error.message);
+    }
+  }, 10 * 60 * 1000); // 10 минут
+}
+
 
 
 async function giveChannelAccess(chatId) {
