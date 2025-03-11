@@ -55,7 +55,7 @@ bot.start(async (ctx) => {
       }
 
       await ctx.replyWithVideo(
-        { source: './videos/start.mp4' }, // Локальный файл
+        { source: './videos/WOW.mp4' }, // Локальный файл
         { caption: menus.start.text, reply_markup: menus.start.reply_markup }
       );
   } catch (error) {
@@ -83,7 +83,7 @@ bot.hears('Подробнее', async (ctx) => {
       }
 
       await ctx.replyWithVideo(
-        { source: './videos/start.mp4' }, // Локальный файл
+        { source: './videos/WOW.mp4' }, // Локальный файл
         { caption: menus.start.text, reply_markup: menus.start.reply_markup }
       );
   } catch (error) {
