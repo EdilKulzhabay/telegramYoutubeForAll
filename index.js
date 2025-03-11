@@ -111,6 +111,11 @@ bot.on("chat_join_request", async (ctx) => {
             console.log(`✅ Доступ выдан: ${user.first_name} (@${user.username})`);
         } else {
             // Если доступа нет — отправляем уведомление
+            const isBanned = await isUserBanned("-1002404499058_1", chatId)
+
+            if (isBanned) {
+              await unbanUser("-1002404499058_1", chatId)
+            }
             await ctx.telegram.declineChatJoinRequest(ctx.chatJoinRequest.chat.id, chatId);
             await ctx.telegram.sendMessage(
                 chatId,
@@ -217,7 +222,7 @@ app.post('/lavaTopNormalPay', async (req, res) => {
         return res.json({ message: "Оплата подтверждена, доступ выдан" });
       }
 
-      
+
       res.json({ message: "Статус не 'completed', обновление не требуется" });
     } catch (error) {
       console.error('Ошибка в lavaTest:', error);
