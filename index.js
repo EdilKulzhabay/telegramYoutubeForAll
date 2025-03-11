@@ -197,6 +197,12 @@ app.post('/lavaTopNormalPay', async (req, res) => {
         }
 
         const chatId = user.chatId
+
+        const isBanned = await isUserBanned("-1002404499058_1", chatId)
+
+        if (isBanned) {
+          await unbanUser("-1002404499058_1", chatId)
+        }
   
         // Обновить пользователя в базе данных
         user.channelAccess = true;
@@ -210,6 +216,8 @@ app.post('/lavaTopNormalPay', async (req, res) => {
   
         return res.json({ message: "Оплата подтверждена, доступ выдан" });
       }
+
+      
       res.json({ message: "Статус не 'completed', обновление не требуется" });
     } catch (error) {
       console.error('Ошибка в lavaTest:', error);
@@ -236,6 +244,12 @@ app.post('/lavaTopRegularPay', async (req, res) => {
       }
 
       const chatId = user.chatId
+
+      const isBanned = await isUserBanned("-1002404499058_1", chatId)
+
+      if (isBanned) {
+        await unbanUser("-1002404499058_1", chatId)
+      }
 
       // Обновить пользователя в базе данных
       user.channelAccess = true;
