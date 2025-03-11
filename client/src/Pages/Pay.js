@@ -136,7 +136,7 @@ export default function Pay() {
                         onClick={handleClick}
                         disabled={loading}
                     >
-                        {loading ? <span className="animate-spin border-2 border-t-transparent border-white rounded-full w-5 h-5"></span> : "Перейти к оплате"}
+                        {loading ? <span className="animate-spin border-2 border-t-transparent border-white rounded-full w-5 h-5">Загрузка...</span> : "Перейти к оплате"}
                     </button>
                     <button className="w-full text-white text-sm" onClick={() => {setStep(1)}}>Вернуться назад</button>
                 </div>
