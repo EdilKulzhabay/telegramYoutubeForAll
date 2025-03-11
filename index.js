@@ -337,7 +337,7 @@ app.get("/getProducts", async (req, res) => {
           },
       });
 
-      res.json(response.data);
+      res.json(response);
   } catch (error) {
       console.error("Ошибка при создании счета:", error?.response?.data || error.message);
       res.status(500).json({ error: "Ошибка при создании счета" });
