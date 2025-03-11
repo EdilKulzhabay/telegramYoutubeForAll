@@ -74,6 +74,8 @@ async function handleStart(ctx) {
   }
 }
 
+////testgit
+
 bot.hears('Подробнее', async (ctx) => {
   try {
       const chatId = ctx.chat.id.toString();
