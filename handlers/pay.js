@@ -45,7 +45,7 @@ const registerPayHandlers = (bot, menus) => {
               text: menus.oneMonth.text,
               reply_markup: {
                   inline_keyboard: [
-                      [{ text: '💳 Картой (любая валюта)', web_app: { url: paymentUrl } }],
+                      [{ text: '💳 Картой (любая валюта)', url: paymentUrl }],
                       [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
                       [{ text: 'Назад', callback_data: 'back' }],
                   ],
@@ -79,7 +79,7 @@ const registerPayHandlers = (bot, menus) => {
               text: menus.threeMonthss.text,
               reply_markup: {
                   inline_keyboard: [
-                      [{ text: '💳 Картой (любая валюта)', web_app: { url: paymentUrl } }],
+                      [{ text: '💳 Картой (любая валюта)', url: paymentUrl }],
                       [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
                       [{ text: 'Назад', callback_data: 'back' }],
                   ],
@@ -113,7 +113,7 @@ const registerPayHandlers = (bot, menus) => {
                 text: menus.twelveMonths.text,
                 reply_markup: {
                     inline_keyboard: [
-                        [{ text: '💳 Картой (любая валюта)', web_app: { url: paymentUrl } }],
+                        [{ text: '💳 Картой (любая валюта)', url: paymentUrl }],
                         [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
                         [{ text: 'Назад', callback_data: 'back' }],
                     ],
