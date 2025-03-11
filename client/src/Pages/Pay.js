@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import api from "../api";
 
@@ -9,6 +9,57 @@ export default function Pay() {
     const [email, setEmail] = useState("")
     const [step, setStep] = useState(1)
     const [loading, setLoading] = useState(false)
+
+    const [price, setPrice] = useState(null);
+
+    const productId = "6a336c2b-7992-40d7-8829-67159d4cd3c5";
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const response = await axios.get("https://gate.lava.top/api/v2/products", {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Api-Key": process.env.X_API_KEY,
+                    },
+                });
+                const products = response.data.items;
+
+                const product = products
+                    .flatMap(p => p.offers)
+                    .find(offer => offer.id === productId);
+
+                if (!product) {
+                    console.error("Продукт не найден");
+                    return;
+                }
+
+                const periodicityMap = {
+                    "1": "MONTHLY",
+                    "3": "PERIOD_90_DAYS",
+                    "12": "PERIOD_YEAR",
+                };
+
+                const selectedPeriod = periodicityMap[period] || "MONTHLY";
+                const selectedCurrency = paymentMethod === "bank_rf" ? "RUB" : "USD";
+
+                const selectedPrice = product.prices.find(
+                    p => p.periodicity === selectedPeriod && p.currency === selectedCurrency
+                );
+
+                if (selectedPrice) {
+                    setPrice(`${selectedPrice.amount} ${selectedPrice.currency}`);
+                } else {
+                    console.error("Цена не найдена");
+                    setPrice("N/A");
+                }
+            } catch (error) {
+                console.error("Ошибка при получении продукта:", error);
+            }
+        };
+
+        fetchProduct();
+    }, [period, paymentMethod]);
 
     const handleClick = async () => {
         setLoading(true)
@@ -105,7 +156,7 @@ export default function Pay() {
                 
                 
                 <h2 className="text-lg font-bold mb-2">Стоимость</h2>
-                <p className="text-2xl font-bold mb-6">{paymentMethod === "bank_rf" ? "50 RUB" : "0.56 USD"}</p>
+                <p className="text-2xl font-bold mb-6">{price}</p>
                 
                 <button className="w-full p-3 bg-gray-800 rounded-lg text-white" onClick={() => {setStep(2)}}>Далее</button>
             </div> :
@@ -125,7 +176,7 @@ export default function Pay() {
                     </div>
                     <div>
                     <p className="text-gray-400 text-sm">Стоимость</p>
-                    <p className="text-white">{paymentMethod === "bank_rf" ? "50 RUB" : "0.56 USD"}</p>
+                    <p className="text-white">{price}</p>
                     </div>
                 </div>
                 

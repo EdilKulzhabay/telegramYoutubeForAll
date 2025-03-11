@@ -33,7 +33,7 @@ const registerPayHandlers = (bot, userStates, menus) => {
           text: menus.oneMonth.text,
           reply_markup: {
             inline_keyboard: [
-              [{ text: 'Картой (любая валюта)', web_app: { url: paymentUrl } }],
+              [{ text: '💳 Картой (любая валюта)', web_app: { url: paymentUrl } }],
               // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
               [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
               [{ text: 'Назад', callback_data: 'back' }],
@@ -61,10 +61,10 @@ const registerPayHandlers = (bot, userStates, menus) => {
   
         // Обновляем меню с динамической ссылкой
         const dynamicMenu = {
-          text: menus.oneMonth.text,
+          text: menus.threeMonthss.text,
           reply_markup: {
             inline_keyboard: [
-              [{ text: 'Картой (любая валюта)', web_app: { url: paymentUrl } }],
+              [{ text: '💳 Картой (любая валюта)', web_app: { url: paymentUrl } }],
               // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
               [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
               [{ text: 'Назад', callback_data: 'back' }],
@@ -92,10 +92,10 @@ const registerPayHandlers = (bot, userStates, menus) => {
   
         // Обновляем меню с динамической ссылкой
         const dynamicMenu = {
-          text: menus.oneMonth.text,
+          text: menus.twelveMonths.text,
           reply_markup: {
             inline_keyboard: [
-              [{ text: 'Картой (любая валюта)', web_app: { url: paymentUrl } }],
+              [{ text: '💳 Картой (любая валюта)', web_app: { url: paymentUrl } }],
               // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
               [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
               [{ text: 'Назад', callback_data: 'back' }],
