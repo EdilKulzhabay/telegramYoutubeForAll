@@ -335,6 +335,9 @@ app.get("/getProducts", async (req, res) => {
               "Content-Type": "application/json",
               "X-Api-Key": process.env.X_API_KEY,
           },
+          params: {
+            showAllSubscriptionPeriods: true
+          }
       });
 
 
