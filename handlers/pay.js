@@ -35,7 +35,7 @@ const registerPayHandlers = (bot, userStates, menus) => {
             inline_keyboard: [
               [{ text: 'Картой (любая валюта)', web_app: { url: paymentUrl } }],
               // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
-              [{ text: 'Договор оферты', callback_data: 'offer' }],
+              [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
               [{ text: 'Назад', callback_data: 'back' }],
             ],
           },
@@ -66,7 +66,7 @@ const registerPayHandlers = (bot, userStates, menus) => {
             inline_keyboard: [
               [{ text: 'Картой (любая валюта)', web_app: { url: paymentUrl } }],
               // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
-              [{ text: 'Договор оферты', callback_data: 'offer' }],
+              [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
               [{ text: 'Назад', callback_data: 'back' }],
             ],
           },
@@ -97,7 +97,7 @@ const registerPayHandlers = (bot, userStates, menus) => {
             inline_keyboard: [
               [{ text: 'Картой (любая валюта)', web_app: { url: paymentUrl } }],
               // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
-              [{ text: 'Договор оферты', callback_data: 'offer' }],
+              [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
               [{ text: 'Назад', callback_data: 'back' }],
             ],
           },
