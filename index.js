@@ -63,7 +63,7 @@ async function handleStart(ctx) {
       }
 
       await ctx.sendVideo(
-        "BAACAgIAAxkDAAIBYGfQc3p7nYg0HovMD9mwfLzJWH6BAAIgcQACnHKIShGXRjBdb6DfNgQ",
+        "BAACAgIAAxkDAAIBoGfQg7RyamGcAjjFU2xzsLaXygclAAKYcgACnHKISkGiUwABzfmF_TYE",
         { caption: "Добро пожаловать! 🎬 Подробности ниже ⬇️" }
       );
       await ctx.reply(menus.start.text, menus.start);
@@ -95,7 +95,7 @@ bot.hears('Подробнее', async (ctx) => {
       }
 
       await ctx.sendVideo(
-        "BAACAgIAAxkDAAIBYGfQc3p7nYg0HovMD9mwfLzJWH6BAAIgcQACnHKIShGXRjBdb6DfNgQ",
+        "BAACAgIAAxkDAAIBoGfQg7RyamGcAjjFU2xzsLaXygclAAKYcgACnHKISkGiUwABzfmF_TYE",
         { caption: "Добро пожаловать! 🎬 Подробности ниже ⬇️" }
       );
       await ctx.reply(menus.start.text, menus.start);
