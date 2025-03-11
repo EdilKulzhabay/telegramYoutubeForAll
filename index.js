@@ -190,9 +190,9 @@ process.once('SIGTERM', () => bot.stop('SIGTERM'));
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: "*", // Можно поставить "*" для всех источников, но это небезопасно
+  origin: "*", // Можно указать конкретный домен, например, "https://kulzhabay.kz"
   methods: "GET,POST,PUT,DELETE,OPTIONS",
-  allowedHeaders: "Content-Type,Authorization",
+  allowedHeaders: "Content-Type,Authorization,X-Requested-With",
   credentials: true
 }));
 
