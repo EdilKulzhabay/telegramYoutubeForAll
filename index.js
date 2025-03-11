@@ -328,6 +328,22 @@ app.post("/create-invoice", async (req, res) => {
   }
 });
 
+app.get("/getProducts", async (req, res) => {
+  try {
+      const response = await axios.get("https://gate.lava.top/api/v2/products", {
+          headers: {
+              "Content-Type": "application/json",
+              "X-Api-Key": process.env.X_API_KEY,
+          },
+      });
+
+      res.json(response.data);
+  } catch (error) {
+      console.error("Ошибка при создании счета:", error?.response?.data || error.message);
+      res.status(500).json({ error: "Ошибка при создании счета" });
+  }
+});
+
 const invoiceStatusChecks = {};
 
 function startInvoiceStatusCheck(invoiceId) {

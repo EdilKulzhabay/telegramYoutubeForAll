@@ -17,12 +17,7 @@ export default function Pay() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await axios.get("https://gate.lava.top/api/v2/products", {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-Api-Key": process.env.X_API_KEY,
-                    },
-                });
+                const response = await api.get("/getProducts");
                 const products = response.data.items;
 
                 const product = products
