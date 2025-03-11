@@ -300,7 +300,7 @@ function startInvoiceStatusCheck(invoiceId) {
     } catch (error) {
       console.error(`Ошибка проверки статуса счета ${invoiceId}:`, error.message);
     }
-  }, 10 * 60 * 100); // 10 минут
+  }, 10 * 60 * 1000); // 10 минут
 }
 
 
