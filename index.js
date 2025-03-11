@@ -187,7 +187,7 @@ app.post('/lavaTopNormalPay', async (req, res) => {
     try {
       const {status, buyer, timestamp} = req.body
       console.log("req.body in lavaTopNormalPay = ", req.body);
-      if (status === "completed") {
+      if (status === "subscription-active") {
         const userEmail = buyer.email
         
         const user = await User.findOne({ email: userEmail });
@@ -226,7 +226,7 @@ app.post('/lavaTopRegularPay', async (req, res) => {
     const {status, buyer, timestamp} = req.body
     console.log("req.body in lavaTopRegularPay = ", req.body);
     
-    if (status === "completed") {
+    if (status === "subscription-active") {
       const userEmail = buyer.email
       
       const user = await User.findOne({ email: userEmail });
@@ -287,8 +287,8 @@ app.post("/create-invoice", async (req, res) => {
 
       console.log("response in create-invoice = ", response.data);
 
-      const invoiceId = response.data.id;
-      startInvoiceStatusCheck(invoiceId);
+      // const invoiceId = response.data.id;
+      // startInvoiceStatusCheck(invoiceId);
 
       res.json(response.data);
   } catch (error) {
@@ -329,11 +329,11 @@ function startInvoiceStatusCheck(invoiceId) {
         user.channelAccess = true;
         user.payData.date = new Date(); // Используем текущую дату
 
-        // const isBanned = await isUserBanned("-1002404499058_1", chatId)
+        const isBanned = await isUserBanned("-1002404499058_1", chatId)
 
-        // if (isBanned) {
-        //   await unbanUser("-1002404499058_1", chatId)
-        // }
+        if (isBanned) {
+          await unbanUser("-1002404499058_1", chatId)
+        }
 
         await user.save();
         await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
@@ -357,7 +357,19 @@ function startInvoiceStatusCheck(invoiceId) {
   }, 3 * 60 * 1000); // 10 минут
 }
 
-
+app.post("/unban", async (req, res) => {
+  try {
+      await unbanUser("-1002404499058_1", "1308683371")
+      await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+        chat_id: chatId,
+        text: `Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi`
+      });
+      res.json(response.data);
+  } catch (error) {
+      console.error("Ошибка при создании счета:", error?.response?.data || error.message);
+      res.status(500).json({ error: "Ошибка при создании счета" });
+  }
+});
 
 async function giveChannelAccess(chatId) {
     if (!chatId) {
