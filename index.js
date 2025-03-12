@@ -326,7 +326,7 @@ app.post("/create-invoice", async (req, res) => {
       let paymentMethod = ""
 
       if (currency === "USD") {
-        paymentMethod = "PAYPAL"
+        paymentMethod = "UNLIMINT"
       } else {
         paymentMethod = "BANK131"
       }
