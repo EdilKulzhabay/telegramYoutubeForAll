@@ -106,53 +106,64 @@ bot.hears('Подробнее', async (ctx) => {
 });
 
 bot.on("chat_join_request", async (ctx) => {
-    try {
-        const user = ctx.chatJoinRequest.from;
-        const chatId = user.id;
+  try {
+      const user = ctx.chatJoinRequest.from;
+      const chatId = user.id;
+      const groupId = "-1002404499058_1"; // ID группы
 
-        console.log(`Запрос на вступление: ${user.first_name} (@${user.username})`);
+      console.log(`Запрос на вступление: ${user.first_name} (@${user.username})`);
 
-        // Ищем пользователя в базе данных
-        let dbUser = await User.findOne({ chatId });
+      // Проверяем, есть ли пользователь в базе данных
+      let dbUser = await User.findOne({ chatId });
 
-        if (!dbUser) {
-          dbUser = new User({chatId, channelAccess: false})  
-          await dbUser.save()
-        }
+      if (!dbUser) {
+          dbUser = new User({ chatId, channelAccess: false });
+          await dbUser.save();
+      }
 
-        if (dbUser.channelAccess) {
-            // Если у пользователя есть доступ — одобряем заявку
-            await ctx.telegram.approveChatJoinRequest(ctx.chatJoinRequest.chat.id, chatId);
-            console.log(`✅ Доступ выдан: ${user.first_name} (@${user.username})`);
-        } else {
-            // Если доступа нет — отправляем уведомление
-            const isBanned = await isUserBanned("-1002404499058_1", chatId)
+      // Проверяем, состоит ли уже в группе
+      try {
+          const member = await ctx.telegram.getChatMember(groupId, chatId);
 
-            if (isBanned) {
-              await unbanUser("-1002404499058_1", chatId)
-            }
-            await ctx.telegram.declineChatJoinRequest("-1002404499058_1", chatId);
-            await ctx.telegram.sendMessage(
+          if (["member", "administrator", "creator"].includes(member.status)) {
+              console.log(`✅ Пользователь уже в группе: ${user.first_name} (@${user.username})`);
+              return; // Выходим, если пользователь уже в группе
+          }
+      } catch (error) {
+          console.warn(`⚠️ Ошибка при проверке статуса пользователя: ${error.message}`);
+      }
+
+      if (dbUser.channelAccess) {
+          // Если у пользователя есть доступ — одобряем заявку
+          await ctx.telegram.approveChatJoinRequest(groupId, chatId);
+          console.log(`✅ Доступ выдан: ${user.first_name} (@${user.username})`);
+      } else {
+          // Если доступа нет — проверяем, не в бане ли он
+          const isBanned = await isUserBanned(groupId, chatId);
+
+          if (isBanned) {
+              await unbanUser(groupId, chatId);
+          }
+
+          await ctx.telegram.declineChatJoinRequest(groupId, chatId);
+          await ctx.telegram.sendMessage(
               chatId,
               `Для доступа к Образовательному сообществу "YouTube для ВСЕХ" вам необходимо оформить подписку.`,
               {
                   reply_markup: {
-                      keyboard: [
-                          [{ text: "Подробнее" }]
-                      ],
+                      keyboard: [[{ text: "Подробнее" }]],
                       resize_keyboard: true,
                       one_time_keyboard: true
                   }
               }
           );
-            console.log(`⛔ Доступ отклонен: ${user.first_name} (@${user.username})`);
-        }
-    } catch (error) {
-        console.error("❌ Ошибка в обработке запроса на вступление:", error);
-    }
+
+          console.log(`⛔ Доступ отклонен: ${user.first_name} (@${user.username})`);
+      }
+  } catch (error) {
+      console.error("❌ Ошибка в обработке запроса на вступление:", error);
+  }
 });
-
-
 
 async function isUserBanned(chatId, userId) {
   try {
@@ -315,7 +326,7 @@ app.post("/create-invoice", async (req, res) => {
       let paymentMethod = ""
 
       if (currency === "USD") {
-        paymentMethod = "UNLIMINT"
+        paymentMethod = "PAYPAL"
       } else {
         paymentMethod = "BANK131"
       }
