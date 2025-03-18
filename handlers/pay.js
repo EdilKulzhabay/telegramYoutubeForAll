@@ -16,11 +16,11 @@ const generatePaymentLink = (chatId, selectedPlan) => {
   return `https://kulzhabay.kz/pay/${chatId}/${selectedPlan}`;
 }
 
-const generateTextForUSDT = (price, uid) => {
+const generateTextForUSDT = (price, address) => {
     return `Отправьте
 ${price} USDT в сети TRC-20
 На адрес:
-${uid}
+\`${address}\`
 
 *кликните на номер счета и он скопируется
 
@@ -198,6 +198,7 @@ const registerPayHandlers = (bot, menus) => {
             const text =  generateTextForUSDT(price, address)
             const dynamicMenu = {
                 text,
+                parse_mode: "Markdown",
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: 'Я оплатил', callback_data: 'paid' }],
