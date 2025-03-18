@@ -167,17 +167,15 @@ const registerPayHandlers = (bot, menus) => {
             user.history.push(user.currentMenu);
             user.currentMenu = 'USDT';
 
-            const uid = await getSubDepositAddress(chatId)
+            const {address, uid} = await getSubDepositAddress(chatId)
 
             user.bybitUID = uid
             const price = await fetchProduct("foreign_bank", user.selectedPlan)
             user.bybitUIDPrice = price
 
-
             await user.save();
 
-
-            const text =  generateTextForUSDT(price, uid)
+            const text =  generateTextForUSDT(price, address)
             const dynamicMenu = {
                 text,
                 reply_markup: {
@@ -244,7 +242,7 @@ async function getSubDepositAddress(clientId) {
             console.error(`Адрес TRX для ${uid} не найден`);
             return null;
           }
-          return TRXAddress;
+          return {address: TRXAddress, uid};
         } else {
           console.error(`Ошибка получения адреса для ${uid}: ${response.retMsg}`);
           return null;
