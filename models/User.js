@@ -43,6 +43,10 @@ const UserSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
+        selectedPlan: {
+            type: Number,
+            default: 1
+        },
         currentMenu: { type: String, default: 'start' },  // Текущий экран меню
         history: { type: [String], default: [] } 
     },
