@@ -238,7 +238,7 @@ const registerPayHandlers = (bot, menus) => {
             user.currentMenu = 'paid';
             await user.save();
 
-            const isPaid = checkPay(user.bybitUID, user.bybitUIDPrice)
+            const isPaid = await checkPay(user.bybitUID, user.bybitUIDPrice)
 
             if (isPaid) {
                 const transferResponse = await transferFunds(user.bybitUID, user.bybitUIDPrice)
@@ -472,7 +472,7 @@ async function deleteSubAccount(subUid) {
         const response = await client.deleteSubMember({ subMemberId: subUid });
         if (response.retCode === 0) {
             if (clientQueue.length > 0) {
-                processQueue()
+                await processQueue()
             }
             console.log(`Субаккаунт ${subUid} удалён`);
             return true;
