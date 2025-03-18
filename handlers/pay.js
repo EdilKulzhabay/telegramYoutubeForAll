@@ -1,5 +1,4 @@
 const User = require("../models/User.js");
-// const {getSubDepositAddress2} = require("../bybit.js")
 const { RestClientV5 } = require('bybit-api');
 const { randomUUID } = require('crypto');
 const dotenv = require('dotenv');
@@ -15,6 +14,19 @@ const client = new RestClientV5({
 const generatePaymentLink = (chatId, selectedPlan) => {
   return `https://kulzhabay.kz/pay/${chatId}/${selectedPlan}`;
 }
+
+const generateTextForUSDT = (price, uid) => {
+    return `Отправьте
+${price} USDT в сети TRC-20
+На адрес:
+${uid}
+
+*кликните на номер счета и он скопируется
+
+После оплаты нажмите Я оплатил 👇
+
+*Обязательно проверьте адрес кошелька`
+} 
 
 const registerPayHandlers = (bot, menus) => {
     bot.action('payAccess', async (ctx) => {
@@ -154,24 +166,17 @@ const registerPayHandlers = (bot, menus) => {
             user.history.push(user.currentMenu);
             user.currentMenu = 'USDT';
 
-            const uid = await getSubDepositAddress2(chatId)
+            const uid = await getSubDepositAddress(chatId)
 
             user.bybitUID = uid
-            
+            const price = fetchProduct("foreign_bank", user.selectedPlan)
+            user.bybitUIDPrice = price
+
+
             await user.save();
 
-            const text = `Отправьте
-80 USDT в сети TRC-20
-На адрес:
-${uid}
 
-*кликните на номер счета и он скопируется
-
-После оплаты нажмите Я оплатил 👇
-
-*Обязательно проверьте адрес кошелька
-`
-
+            const text =  generateTextForUSDT(price, uid)
             const dynamicMenu = {
                 text,
                 reply_markup: {
@@ -203,14 +208,12 @@ ${uid}
             user.currentMenu = 'paid';
             await user.save();
 
+            const isPaid = checkPay(user.bybitUID, user.bybitUIDPrice)
+
             const dynamicMenu = {
                 text: menus.threeMonthss.text,
                 reply_markup: {
-                    inline_keyboard: [
-                        [{ text: 'Я оплатил', callback_data: 'paid' }],
-                        [{ text: 'Инструкция', url: 'https://telegra.ph/Kak-oplatit-podpisku-kriptoj-12-09' }],
-                        [{ text: 'Назад', callback_data: 'back' }],
-                    ],
+                    
                 },
             };
 
@@ -222,7 +225,7 @@ ${uid}
     });
   };
 
-async function getSubDepositAddress2(clientId) {
+async function getSubDepositAddress(clientId) {
     try {
       const randomSuffix = Math.floor(100000 + Math.random() * 900000);
       const uniqueUsername = `${clientId}${randomSuffix}`;
@@ -252,6 +255,66 @@ async function getSubDepositAddress2(clientId) {
     } catch (error) {
       console.error(`Ошибка: ${error.message}`);
       return null;
+    }
+}
+
+const fetchProduct = async (paymentMethod, period) => {
+    const productId = "6a336c2b-7992-40d7-8829-67159d4cd3c5";
+    try {
+        const response = await api.get("/getProducts");
+        console.log("response in Pay = ", response);
+        
+        const products = response.data.items
+
+        const product = products
+            .flatMap(p => p.offers)
+            .find(offer => offer.id === productId);
+
+        if (!product) {
+            console.error("Продукт не найден");
+            return;
+        }
+
+        const periodicityMap = {
+            "1": "MONTHLY",
+            "3": "PERIOD_90_DAYS",
+            "12": "PERIOD_YEAR",
+        };
+
+        const selectedPeriod = periodicityMap[period] || "MONTHLY";
+        const selectedCurrency = paymentMethod === "bank_rf" ? "RUB" : "USD";
+
+        const selectedPrice = product.prices.find(
+            p => p.periodicity === selectedPeriod && p.currency === selectedCurrency
+        );
+
+        if (selectedPrice) {
+            return selectedPrice.amount
+        } else {
+            console.error("Цена не найдена");
+        }
+    } catch (error) {
+        console.error("Ошибка при получении продукта:", error);
+    }
+};
+
+async function checkPay(subUid, fixedAmount) {
+    try {
+        console.log("subUid = ", subUid);
+        console.log("fixedAmount = ", fixedAmount);
+        const response = await client.getSubAccountDepositRecords({ subMemberId: subUid, coin: 'USDT' });
+        console.log("response in checkPay = ", response);
+        console.log("rows in checkPay = ", response.result.rows);
+        if (response.retCode === 0) {
+            const paid = response.result.rows.some((d) => parseFloat(d.amount) >= fixedAmount);
+            return paid;
+        } else {
+            console.error(`Ошибка проверки депозита для ${subUid}: ${response.retMsg}`);
+            return false;
+        }
+    } catch (error) {
+        console.error(`Ошибка: ${error.message}`);
+        return false;
     }
 }
 
