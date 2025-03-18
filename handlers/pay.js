@@ -12,6 +12,11 @@ const client = new RestClientV5({
   testnet: false,
 });
 
+let clientQueue = [];
+
+// Максимальное количество субаккаунтов
+const MAX_SUB_ACCOUNTS = 20;
+
 const generatePaymentLink = (chatId, selectedPlan) => {
   return `https://kulzhabay.kz/pay/${chatId}/${selectedPlan}`;
 }
@@ -187,11 +192,16 @@ const registerPayHandlers = (bot, menus) => {
             user.history.push(user.currentMenu);
             user.currentMenu = 'USDT';
 
-            const {address, uid} = await getSubDepositAddress(chatId)
+            const {address, uid, isSuccess} = await getSubDepositAddress(chatId)
+
+            if (!isSuccess) {
+                ctx.reply("Сейчас создадим адрес для получение оплаты, ожидайте")
+                return
+            }
 
             user.bybitUID = uid
             const price = await fetchProduct("foreign_bank", user.selectedPlan)
-            user.bybitUIDPrice = price
+            user.bybitUIDPrice = 3
 
             await user.save();
 
@@ -210,7 +220,7 @@ const registerPayHandlers = (bot, menus) => {
 
             await ctx.reply(dynamicMenu.text, dynamicMenu);
         } catch (error) {
-            console.error('Ошибка в twelveMonths:', error);
+            console.error('Ошибка в USDT:', error);
             await ctx.reply('Произошла ошибка, попробуйте снова.');
         }
     });
@@ -277,7 +287,7 @@ const registerPayHandlers = (bot, menus) => {
 
             
         } catch (error) {
-            console.error('Ошибка в twelveMonths:', error);
+            console.error('Ошибка в paid:', error);
             await ctx.reply('Произошла ошибка, попробуйте снова.');
         }
     });
@@ -285,34 +295,44 @@ const registerPayHandlers = (bot, menus) => {
 
 async function getSubDepositAddress(clientId) {
     try {
-      const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-      const uniqueUsername = `${clientId}${randomSuffix}`;
-      const res = await client.createSubMember({ username: uniqueUsername, memberType: 1 });
-      console.log('Ответ от createSubMember:', JSON.stringify(res));
-      if (res.retCode === 0) {
-        console.log(`Субаккаунт для ${clientId} создан с UID: ${res.result.uid}`);
-        const uid = res.result.uid
-        const response = await client.getSubDepositAddress('USDT', 'TRX', String(uid));
-      
-        if (response.retCode === 0) {
-          const TRXAddress = response.result.chains.addressDeposit;
-          console.log('Адрес суб аккаунта:', TRXAddress);
-          if (!TRXAddress) {
-            console.error(`Адрес TRX для ${uid} не найден`);
-            return null;
-          }
-          return {address: TRXAddress, uid};
-        } else {
-          console.error(`Ошибка получения адреса для ${uid}: ${response.retMsg}`);
-          return null;
+
+        const subListResponce = await client.getSubUIDList()
+
+        const currentSubAccounts = subListResponce.result.subMembers.length
+        if (currentSubAccounts > MAX_SUB_ACCOUNTS) {
+            console.log(`Лимит субаккаунтов (${MAX_SUB_ACCOUNTS}) достигнут. Клиент ${clientId} добавлен в очередь.`);
+            clientQueue.push(clientId);
+            return {address: "0", uid: "0", isSuccess: false}
         }
-      } else {
-        console.error(`Ошибка создания субаккаунта для ${clientId}: ${res.retMsg}`);
-        return null;
-      }
+        
+        const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+        const uniqueUsername = `${clientId}${randomSuffix}`;
+        const res = await client.createSubMember({ username: uniqueUsername, memberType: 1 });
+        console.log('Ответ от createSubMember:', JSON.stringify(res));
+        if (res.retCode === 0) {
+            console.log(`Субаккаунт для ${clientId} создан с UID: ${res.result.uid}`);
+            const uid = res.result.uid
+            const response = await client.getSubDepositAddress('USDT', 'TRX', String(uid));
+        
+            if (response.retCode === 0) {
+            const TRXAddress = response.result.chains.addressDeposit;
+            console.log('Адрес суб аккаунта:', TRXAddress);
+            if (!TRXAddress) {
+                console.error(`Адрес TRX для ${uid} не найден`);
+                return {address: "0", uid: "0", isSuccess: false}
+            }
+            return {address: TRXAddress, uid, isSuccess: true};
+            } else {
+            console.error(`Ошибка получения адреса для ${uid}: ${response.retMsg}`);
+            return {address: "0", uid: "0", isSuccess: false}
+            }
+        } else {
+            console.error(`Ошибка создания субаккаунта для ${clientId}: ${res.retMsg}`);
+            return {address: "0", uid: "0", isSuccess: false}
+        }
     } catch (error) {
-      console.error(`Ошибка: ${error.message}`);
-      return null;
+        console.error(`Ошибка: ${error.message}`);
+        return {address: "0", uid: "0", isSuccess: false}
     }
 }
 
@@ -402,20 +422,64 @@ async function transferFunds(subUid, fixedAmount) {
     }
   }
 
-async function deleteSubAccount(subUid) {
-try {
-    const response = await client.deleteSubMember({ subMemberId: subUid });
-    if (response.retCode === 0) {
-    console.log(`Субаккаунт ${subUid} удалён`);
-    return true;
+async function processQueue() {
+    if (clientQueue.length === 0) return;
+
+    const nextClientId = clientQueue.shift(); // Берем первого клиента из очереди
+    console.log(`Обработка клиента из очереди: ${nextClientId}`);
+    
+    const result = await getSubDepositAddress(nextClientId);
+    if (result.isSuccess) {
+        const user = await User.findOne({ chatId: nextClientId });
+        if (user) {
+            user.bybitUID = result.uid;
+            const price = await fetchProduct("foreign_bank", user.selectedPlan);
+            user.bybitUIDPrice = price;
+            await user.save();
+
+            const text = generateTextForUSDT(price, result.address);
+            
+            const dynamicMenu = {
+            text,
+            parse_mode: "Markdown",
+            reply_markup: {
+                inline_keyboard: [
+                [{ text: 'Я оплатил', callback_data: 'paid' }],
+                [{ text: 'Инструкция', url: 'https://telegra.ph/Kak-oplatit-podpisku-kriptoj-12-09' }],
+                [{ text: 'Назад', callback_data: 'back' }],
+                ],
+            },
+            };
+
+            await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+                chat_id: nextClientId,
+                text: dynamicMenu.text,
+                parse_mode: dynamicMenu.parse_mode,
+                reply_markup: dynamicMenu.reply_markup,
+            });
+        }
     } else {
-    console.error(`Ошибка удаления субаккаунта ${subUid}: ${response.retMsg}`);
-    return false;
+        clientQueue.push(nextClientId);
     }
-} catch (error) {
-    console.error(`Ошибка: ${error.message}`);
-    return false;
 }
+
+async function deleteSubAccount(subUid) {
+    try {
+        const response = await client.deleteSubMember({ subMemberId: subUid });
+        if (response.retCode === 0) {
+            if (clientQueue.length > 0) {
+                processQueue()
+            }
+            console.log(`Субаккаунт ${subUid} удалён`);
+            return true;
+        } else {
+            console.error(`Ошибка удаления субаккаунта ${subUid}: ${response.retMsg}`);
+        return false;
+        }
+    } catch (error) {
+        console.error(`Ошибка: ${error.message}`);
+        return false;
+    }
 }
 
 module.exports = { registerPayHandlers }

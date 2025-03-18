@@ -256,7 +256,7 @@ app.post('/lavaTopNormalPay', async (req, res) => {
         await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
           chat_id: chatId,
           text: `Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi`
-      });
+        });
   
         return res.json({ message: "Оплата подтверждена, доступ выдан" });
       }
