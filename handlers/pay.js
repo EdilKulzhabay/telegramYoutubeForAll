@@ -1,5 +1,16 @@
 const User = require("../models/User.js");
-const {getSubDepositAddress2} = require("../bybit.js")
+// const {getSubDepositAddress2} = require("../bybit.js")
+const { RestClientV5 } = require('bybit-api');
+const { randomUUID } = require('crypto');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const client = new RestClientV5({
+  key: process.env.API,
+  secret: process.env.SECRET,
+  testnet: false,
+});
 
 const generatePaymentLink = (chatId, selectedPlan) => {
   return `https://kulzhabay.kz/pay/${chatId}/${selectedPlan}`;
@@ -210,5 +221,38 @@ ${uid}
         }
     });
   };
+
+async function getSubDepositAddress2(clientId) {
+    try {
+      const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+      const uniqueUsername = `${clientId}${randomSuffix}`;
+      const response = await client.createSubMember({ username: uniqueUsername, memberType: 1 });
+      console.log('Ответ от createSubMember:', JSON.stringify(response));
+      if (response.retCode === 0) {
+        console.log(`Субаккаунт для ${clientId} создан с UID: ${response.result.uid}`);
+        const uid = response.result.uid
+        const response = await client.getSubDepositAddress('USDT', 'TRX', String(uid));
+      
+        if (response.retCode === 0) {
+          const TRXAddress = response.result.chains.addressDeposit;
+          console.log('Адрес суб аккаунта:', TRXAddress);
+          if (!TRXAddress) {
+            console.error(`Адрес TRX для ${uid} не найден`);
+            return null;
+          }
+          return TRXAddress;
+        } else {
+          console.error(`Ошибка получения адреса для ${uid}: ${response.retMsg}`);
+          return null;
+        }
+      } else {
+        console.error(`Ошибка создания субаккаунта для ${clientId}: ${response.retMsg}`);
+        return null;
+      }
+    } catch (error) {
+      console.error(`Ошибка: ${error.message}`);
+      return null;
+    }
+}
 
 module.exports = { registerPayHandlers }
