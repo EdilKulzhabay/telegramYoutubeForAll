@@ -380,10 +380,14 @@ async function checkPay(subUid, fixedAmount) {
     try {
         const response = await client.getSubAccountDepositRecords({ subMemberId: subUid, coin: 'USDT' });
         if (response.retCode === 0) {
+            console.log("response.result.rows in checkpay = ", response.result.rows);
+            
             if (response.result.rows.length === 0) {
                 return false
             }
+
             const paid = response.result.rows.some((d) => parseFloat(d.amount) >= fixedAmount);
+            console.log("paid in checkpay = ", paid);
             return paid;
         } else {
             console.error(`Ошибка проверки депозита для ${subUid}: ${response.retMsg}`);
