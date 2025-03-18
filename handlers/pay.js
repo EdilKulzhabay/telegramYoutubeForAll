@@ -359,6 +359,9 @@ async function checkPay(subUid, fixedAmount) {
     try {
         const response = await client.getSubAccountDepositRecords({ subMemberId: subUid, coin: 'USDT' });
         if (response.retCode === 0) {
+            if (response.result.rows.length === 0) {
+                return false
+            }
             const paid = response.result.rows.some((d) => parseFloat(d.amount) >= fixedAmount);
             return paid;
         } else {
