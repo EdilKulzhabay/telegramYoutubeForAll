@@ -262,7 +262,7 @@ async function getSubDepositAddress(clientId) {
 const fetchProduct = async (paymentMethod, period) => {
     const productId = "6a336c2b-7992-40d7-8829-67159d4cd3c5";
     try {
-        const response = await axios.get("/getProducts");
+        const response = await axios.get("http://localhost:5031/getProducts");
         console.log("response in Pay = ", response);
         
         const products = response.data.items
