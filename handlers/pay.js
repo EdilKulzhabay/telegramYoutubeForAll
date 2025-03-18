@@ -227,7 +227,7 @@ async function getSubDepositAddress2(clientId) {
       const randomSuffix = Math.floor(100000 + Math.random() * 900000);
       const uniqueUsername = `${clientId}${randomSuffix}`;
       const res = await client.createSubMember({ username: uniqueUsername, memberType: 1 });
-      console.log('Ответ от createSubMember:', JSON.stringify(response));
+      console.log('Ответ от createSubMember:', JSON.stringify(res));
       if (res.retCode === 0) {
         console.log(`Субаккаунт для ${clientId} создан с UID: ${res.result.uid}`);
         const uid = res.result.uid
