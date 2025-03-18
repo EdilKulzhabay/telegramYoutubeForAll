@@ -169,7 +169,7 @@ const registerPayHandlers = (bot, menus) => {
             const uid = await getSubDepositAddress(chatId)
 
             user.bybitUID = uid
-            const price = fetchProduct("foreign_bank", user.selectedPlan)
+            const price = await fetchProduct("foreign_bank", user.selectedPlan)
             user.bybitUIDPrice = price
 
 
