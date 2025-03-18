@@ -38,7 +38,7 @@ const menus = {
         reply_markup: {
           inline_keyboard: [
             [{ text: 'Картой (любая валюта)', url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }],
-            //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+            [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
             [{ text: 'Назад', callback_data: 'back' }],
@@ -51,7 +51,7 @@ const menus = {
         reply_markup: {
           inline_keyboard: [
             [{ text: 'Картой (любая валюта)', url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }],
-            //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+            [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
             [{ text: 'Назад', callback_data: 'back' }],
@@ -64,7 +64,7 @@ const menus = {
         reply_markup: {
           inline_keyboard: [
             [{ text: 'Картой (любая валюта)', url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }],
-            //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+            [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
             [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
             [{ text: 'Назад', callback_data: 'back' }],
@@ -77,7 +77,7 @@ const menus = {
         reply_markup: {
           inline_keyboard: [
             [{ text: 'Я оплатил', callback_data: 'paid' }],
-            [{ text: 'Инструкция', url: 'https://tibetskayacrm.kz' }],
+            [{ text: 'Инструкция', url: 'https://telegra.ph/Kak-oplatit-podpisku-kriptoj-12-09' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
         },

@@ -1,5 +1,5 @@
-import { RestClientV5 } from 'bybit-api';
-import 'dotenv/config';
+const { RestClientV5 } = require('bybit-api');
+const { randomUUID } = require('crypto');
 
 const client = new RestClientV5({
   key: process.env.API,
@@ -11,7 +11,7 @@ async function cleanSubAccounts() {
   try {
     const response = await client.getSubUIDList();
     if (response.retCode === 0) {
-      const subAccounts = response.result.subMemberList || []; // Если undefined, используем пустой массив
+      const subAccounts = response.result.subMembers || []; // Если undefined, используем пустой массив
       if (subAccounts.length === 0) {
         console.log('Субаккаунтов для удаления нет');
         return;
@@ -50,15 +50,16 @@ async function createSubAccount(clientId) {
 async function getSubDepositAddress(subUid) {
   try {
     console.log(`Получение адреса для subUid: ${subUid}`);
-    const response = await client.getSubDepositAddress('USDT', 'TRC20', String(subUid));
-    console.log('Ответ от API:', JSON.stringify(response));
+    const response = await client.getSubDepositAddress('USDT', 'TRX', String(subUid));
+    
     if (response.retCode === 0) {
-      const trc20Address = response.result.chains.find((chain) => chain.chain === 'TRC20')?.addressDeposit;
-      if (!trc20Address) {
-        console.error(`Адрес TRC20 для ${subUid} не найден`);
+      const TRXAddress = response.result.chains.addressDeposit;
+      console.log('Адрес суб аккаунта:', TRXAddress);
+      if (!TRXAddress) {
+        console.error(`Адрес TRX для ${subUid} не найден`);
         return null;
       }
-      return trc20Address;
+      return TRXAddress;
     } else {
       console.error(`Ошибка получения адреса для ${subUid}: ${response.retMsg}`);
       return null;
@@ -87,18 +88,23 @@ async function checkSubAccountDeposit(subUid, fixedAmount) {
 
 async function transferFunds(subUid, fixedAmount) {
   try {
-    const response = await client.createInternalTransfer({
-      transferId: `transfer-${Date.now()}`,
+    const response = await client.createUniversalTransfer({
+      transferId: randomUUID(),
       coin: 'USDT',
       amount: fixedAmount.toString(),
       fromMemberId: subUid,
-      toMemberId: 'main', // Перевод на основной аккаунт
+      toMemberId: '441931017',
+      fromAccountType: 'FUND',    // Изменено на FUND, где есть USDT
+      toAccountType: 'UNIFIED',   // Оставляем UNIFIED для главного аккаунта
     });
+
     if (response.retCode === 0) {
+      console.log("response = ", response);
       console.log(`Средства с субаккаунта ${subUid} переведены на основной аккаунт`);
       return true;
     } else {
       console.error(`Ошибка перевода средств для ${subUid}: ${response.retMsg}`);
+      console.log("response = ", response);
       return false;
     }
   } catch (error) {
@@ -185,9 +191,43 @@ async function processClientPayments(clients, fixedAmount) {
 // Пример вызова
 const clients = [
   { id: 'client1', name: 'Алексей' },
-  { id: 'client2', name: 'Мария' },
-  { id: 'client3', name: 'Иван' },
+  { id: 'client2', name: 'Олжас' },
 ];
-const fixedAmount = 10; // 10 USDT (минимальный депозит для USDT на Bybit)
+const fixedAmount = 3; // 10 USDT (минимальный депозит для USDT на Bybit)
 
-processClientPayments(clients, fixedAmount);
+// processClientPayments(clients, fixedAmount);
+
+async function getSubDepositAddress2(clientId) {
+  try {
+    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
+    const uniqueUsername = `${clientId}${randomSuffix}`;
+    const response = await client.createSubMember({ username: uniqueUsername, memberType: 1 });
+    console.log('Ответ от createSubMember:', JSON.stringify(response));
+    if (response.retCode === 0) {
+      console.log(`Субаккаунт для ${clientId} создан с UID: ${response.result.uid}`);
+      const uid = response.result.uid
+      const response = await client.getSubDepositAddress('USDT', 'TRX', String(uid));
+    
+      if (response.retCode === 0) {
+        const TRXAddress = response.result.chains.addressDeposit;
+        console.log('Адрес суб аккаунта:', TRXAddress);
+        if (!TRXAddress) {
+          console.error(`Адрес TRX для ${uid} не найден`);
+          return null;
+        }
+        return TRXAddress;
+      } else {
+        console.error(`Ошибка получения адреса для ${uid}: ${response.retMsg}`);
+        return null;
+      }
+    } else {
+      console.error(`Ошибка создания субаккаунта для ${clientId}: ${response.retMsg}`);
+      return null;
+    }
+  } catch (error) {
+    console.error(`Ошибка: ${error.message}`);
+    return null;
+  }
+}
+
+module.exports = { getSubDepositAddress2 }
