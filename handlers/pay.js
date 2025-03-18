@@ -29,6 +29,26 @@ ${uid}
 *Обязательно проверьте адрес кошелька`
 } 
 
+async function isUserBanned(chatId, userId) {
+    try {
+        const member = await bot.telegram.getChatMember(chatId, userId);
+        return member.status === 'kicked'; // true, если в бане
+    } catch (error) {
+        console.error("Ошибка при проверке статуса пользователя:", error);
+        return false;
+    }
+}
+
+
+async function unbanUser(chatId, userId) {
+    try {
+        await bot.telegram.unbanChatMember(chatId, userId);
+        console.log(`✅ Пользователь ${userId} разбанен в группе ${chatId}`);
+    } catch (error) {
+        console.error("Ошибка при разбане пользователя:", error);
+    }
+}
+
 const registerPayHandlers = (bot, menus) => {
     bot.action('payAccess', async (ctx) => {
       const chatId = ctx.chat.id;
@@ -209,14 +229,52 @@ const registerPayHandlers = (bot, menus) => {
 
             const isPaid = checkPay(user.bybitUID, user.bybitUIDPrice)
 
-            const dynamicMenu = {
-                text: menus.threeMonthss.text,
-                reply_markup: {
-                    
-                },
-            };
+            if (isPaid) {
+                const transferResponse = await transferFunds(user.bybitUID, user.bybitUIDPrice)
 
-            await ctx.reply(dynamicMenu.text, dynamicMenu);
+                if (transferResponse) {
+                    const deleteResponse = await deleteSubAccount(user.bybitUID)
+                    if (deleteResponse) {
+                        const chatId = user.chatId
+
+                        const isBanned = await isUserBanned("-1002404499058_1", chatId)
+
+                        if (isBanned) {
+                            await unbanUser("-1002404499058_1", chatId)
+                        }
+                
+                        // Обновить пользователя в базе данных
+                        user.channelAccess = true;
+                        user.payData.date = new Date(timestamp); // Преобразуем в объект Date
+                
+                        await user.save();
+                        await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+                            chat_id: chatId,
+                            text: `Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi`
+                        })
+                    } else {
+                        console.log("Ошибка при удалении в pay.js");
+                    }
+                } else {
+                    console.log("Ошибка при переводе денег на основной счет в pay.js");
+                }
+
+            } else {
+                const dynamicMenu = {
+                    text: `Ваши USDT ещё не поступили на кошелёк
+
+*зачисление идет от 1 до 5 мин, ожидайте, пожалуйста, и проверьте снова`,
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: 'Проверить еще раз', callback_data: 'paid' }],
+                            [{ text: 'Назад', callback_data: 'back' }],
+                        ],
+                    },
+                };
+                await ctx.reply(dynamicMenu.text, dynamicMenu);
+            }
+
+            
         } catch (error) {
             console.error('Ошибка в twelveMonths:', error);
             await ctx.reply('Произошла ошибка, попробуйте снова.');
@@ -260,7 +318,7 @@ async function getSubDepositAddress(clientId) {
 const fetchProduct = async (paymentMethod, period) => {
     const productId = "6a336c2b-7992-40d7-8829-67159d4cd3c5";
     try {
-        const response = await axios.get("http://localhost:5031/getProducts");
+        const response = await axios.get("https://api.kulzhabay.kz/getProducts");
         console.log("response in Pay = ", response);
         
         const products = response.data.items
@@ -299,11 +357,7 @@ const fetchProduct = async (paymentMethod, period) => {
 
 async function checkPay(subUid, fixedAmount) {
     try {
-        console.log("subUid = ", subUid);
-        console.log("fixedAmount = ", fixedAmount);
         const response = await client.getSubAccountDepositRecords({ subMemberId: subUid, coin: 'USDT' });
-        console.log("response in checkPay = ", response);
-        console.log("rows in checkPay = ", response.result.rows);
         if (response.retCode === 0) {
             const paid = response.result.rows.some((d) => parseFloat(d.amount) >= fixedAmount);
             return paid;
@@ -315,6 +369,49 @@ async function checkPay(subUid, fixedAmount) {
         console.error(`Ошибка: ${error.message}`);
         return false;
     }
+}
+
+async function transferFunds(subUid, fixedAmount) {
+    try {
+      const response = await client.createUniversalTransfer({
+        transferId: randomUUID(),
+        coin: 'USDT',
+        amount: fixedAmount.toString(),
+        fromMemberId: subUid,
+        toMemberId: '441931017',
+        fromAccountType: 'FUND',    // Изменено на FUND, где есть USDT
+        toAccountType: 'UNIFIED',   // Оставляем UNIFIED для главного аккаунта
+      });
+  
+      if (response.retCode === 0) {
+        console.log("response = ", response);
+        console.log(`Средства с субаккаунта ${subUid} переведены на основной аккаунт`);
+        return true;
+      } else {
+        console.error(`Ошибка перевода средств для ${subUid}: ${response.retMsg}`);
+        console.log("response = ", response);
+        return false;
+      }
+    } catch (error) {
+      console.error(`Ошибка: ${error.message}`);
+      return false;
+    }
+  }
+
+async function deleteSubAccount(subUid) {
+try {
+    const response = await client.deleteSubMember({ subMemberId: subUid });
+    if (response.retCode === 0) {
+    console.log(`Субаккаунт ${subUid} удалён`);
+    return true;
+    } else {
+    console.error(`Ошибка удаления субаккаунта ${subUid}: ${response.retMsg}`);
+    return false;
+    }
+} catch (error) {
+    console.error(`Ошибка: ${error.message}`);
+    return false;
+}
 }
 
 module.exports = { registerPayHandlers }
