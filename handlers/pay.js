@@ -246,7 +246,7 @@ async function getSubDepositAddress2(clientId) {
           return null;
         }
       } else {
-        console.error(`Ошибка создания субаккаунта для ${clientId}: ${response.retMsg}`);
+        console.error(`Ошибка создания субаккаунта для ${clientId}: ${res.retMsg}`);
         return null;
       }
     } catch (error) {
