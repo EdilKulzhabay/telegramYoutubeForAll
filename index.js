@@ -121,7 +121,7 @@ async function checkTransaction(txId, chatId) {
       if (!transaction) {
         return "not found"
       }
-      const user = await User.find({chatId})
+      const user = await User.findOne({chatId})
 
       if (transaction.amount < user.bybitUIDPrice) {
         return "not enough"
