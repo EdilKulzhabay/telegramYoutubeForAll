@@ -92,7 +92,7 @@ bot.hears(/^[a-fA-F0-9]{64}$/, async (ctx) => {
 
     // Обновить пользователя в базе данных
     user.channelAccess = true;
-    user.payData.date = new Date(timestamp); // Преобразуем в объект Date
+    user.payData.date = new Date(Date.now()); // Преобразуем в объект Date
 
     await user.save();
     await ctx.reply("Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi")
