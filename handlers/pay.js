@@ -11,7 +11,7 @@ const generateUSDTText = async (selectedPlan) => {
     const text = `Отправьте
 ${price} USDT в сети TRC-20
 На адрес:
-\`TXbSHP4Dbp4S8URBK8yEGTvGNLS9EbSrkv\`
+\`TAPpx1TbLe334nsEhJbV4T9owWuVdsxN2k\`
 
 *кликните на номер счета и он скопируется
 
