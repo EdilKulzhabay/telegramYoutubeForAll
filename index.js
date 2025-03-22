@@ -112,29 +112,32 @@ async function checkTransaction(txId, chatId) {
   try {
     const candidate = await User.findOne({bybitUID: txId})
     if (candidate) {
-      return "scammer"
+      return {isValid: "scammer", transaction: null}
     }
     const response = await client.getDepositRecords({
       coin: 'USDT'
     });
 
+    console.log("response in chatTransaction = ", response);
+    
+
     if (response.retMsg === "success") {
       const transactions = response.result.rows
       const transaction = transactions.find((item) => item.txID === txId)
       if (!transaction) {
-        return "not found"
+        return {isValid: "not found", transaction: null}
       }
       const user = await User.findOne({chatId})
 
       if (transaction.amount < user.bybitUIDPrice) {
-        return "not enough"
+        return {isValid: "not enough", transaction: null}
       }
 
       user.bybitUID = txId
       await user.save()
       return {isValid: "success", transaction}
     } else {
-      return "error in bybit"
+      return {isValid: "error in bybit", transaction: null}
     }
   } catch (error) {
     console.error(`Ошибка при проверке TXID: ${error.message}`);
