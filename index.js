@@ -123,6 +123,7 @@ async function checkTransaction(txId, chatId) {
 
     if (response.retMsg === "success") {
       const transactions = response.result.rows
+      console.log("transactions in chatTransaction = ", transactions);
       const transaction = transactions.find((item) => item.txID === txId)
       if (!transaction) {
         return {isValid: "not found", transaction: null}
