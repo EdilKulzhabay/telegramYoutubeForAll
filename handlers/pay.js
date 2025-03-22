@@ -1,4 +1,5 @@
 const User = require("../models/User.js");
+const axios = require('axios')
 
 const generatePaymentLink = (chatId, selectedPlan) => {
   return `https://kulzhabay.kz/pay/${chatId}/${selectedPlan}`;

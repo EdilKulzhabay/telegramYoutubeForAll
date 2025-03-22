@@ -158,10 +158,10 @@ async function handleStart(ctx) {
           await user.save();
       }
 
-      // await ctx.sendVideo(
-      //   "BAACAgIAAxkDAAIBoGfQg7RyamGcAjjFU2xzsLaXygclAAKYcgACnHKISkGiUwABzfmF_TYE",
-      //   { caption: "Добро пожаловать! 🎬 Подробности ниже ⬇️" }
-      // );
+      await ctx.sendVideo(
+        "BAACAgIAAxkDAAIBoGfQg7RyamGcAjjFU2xzsLaXygclAAKYcgACnHKISkGiUwABzfmF_TYE",
+        { caption: "Добро пожаловать! 🎬 Подробности ниже ⬇️" }
+      );
       await ctx.reply(menus.start.text, menus.start);
 
   } catch (error) {
