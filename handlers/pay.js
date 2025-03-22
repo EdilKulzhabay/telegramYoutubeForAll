@@ -19,7 +19,7 @@ ${price} USDT в сети TRC-20
 
 *Обязательно проверьте адрес кошелька и сохраните ХЭШ транзакции (TXID)`
 
-    return {text, price: 3}
+    return {text, price}
 }
 
 const fetchProduct = async (paymentMethod, period) => {
@@ -104,7 +104,7 @@ const registerPayHandlers = (bot, menus) => {
               reply_markup: {
                   inline_keyboard: [
                       [{ text: '💳 Картой (любая валюта)', url: paymentUrl }],
-                      [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+                      // [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
                       [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
                       [{ text: 'Назад', callback_data: 'back' }],
                   ],
@@ -139,7 +139,7 @@ const registerPayHandlers = (bot, menus) => {
               reply_markup: {
                   inline_keyboard: [
                       [{ text: '💳 Картой (любая валюта)', url: paymentUrl }],
-                      [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+                      // [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
                       [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
                       [{ text: 'Назад', callback_data: 'back' }],
                   ],
@@ -174,7 +174,7 @@ const registerPayHandlers = (bot, menus) => {
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: '💳 Картой (любая валюта)', url: paymentUrl }],
-                        [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+                        // [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
                         [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
                         [{ text: 'Назад', callback_data: 'back' }],
                     ],
