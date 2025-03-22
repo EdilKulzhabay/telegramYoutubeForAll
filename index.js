@@ -12,8 +12,15 @@ const { registerAboutHandlers } = require('./handlers/about.js');
 const { registerCommonHandlers } = require('./handlers/common.js');
 const User = require('./models/User.js');
 const EventHistory = require('./models/EventHistory.js');
+const { RestClientV5 } = require('bybit-api');
 
 dotenv.config();
+
+const client = new RestClientV5({
+  key: process.env.API,
+  secret: process.env.SECRET,
+  testnet: false,
+});
 
 mongoose
   .connect("mongodb://localhost:27017/telegram")
@@ -38,10 +45,99 @@ bot.start(async (ctx) => {
   await handleStart(ctx);
 });
 
+bot.use((ctx, next) => {
+  const allowedChatId = '1308683371';
+  const currentChatId = ctx.chat?.id.toString();
+
+  if (currentChatId === allowedChatId) {
+    return next();
+  } else {
+    console.log(`Сообщение от ${currentChatId} проигнорировано, доступ только для ${allowedChatId}`);
+    ctx.reply("В данный момент идут технические работы, пожалуйста, попробуйте через 15 мин")
+    return;
+  }
+});
+
 // Обработчик для слова "start"
 bot.hears(/^start$/i, async (ctx) => {
   await handleStart(ctx);
 });
+
+bot.hears('Подробнее', async (ctx) => {
+  await handleStart(ctx);
+});
+
+bot.hears(/^0x[a-fA-F0-9]{64}$/, async (ctx) => {
+  await ctx.reply("Вы отправили txID. Мы его проверяем...");
+  const txId = ctx.message.text;
+  const chatId = ctx.chat.id;
+  const user = await User.findOne({chatId})
+
+  // Логика обработки транзакции
+  const {isValid, transaction} = await checkTransaction(txId, chatId);
+  if (isValid === "success") {
+    await EventHistory.create({
+      eventType: "bybit",
+      timestamp: new Date(Date.now()), // Используем timestamp, если есть
+      rawData: transaction // Полностью сохраняем весь req.body
+    });
+    const isBanned = await isUserBanned("-1002404499058_1", chatId)
+
+    if (isBanned) {
+      await unbanUser("-1002404499058_1", chatId)
+    }
+
+    // Обновить пользователя в базе данных
+    user.channelAccess = true;
+    user.payData.date = new Date(timestamp); // Преобразуем в объект Date
+
+    await user.save();
+    await ctx.reply("Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi")
+  } else if (isValid === "scammer") {
+    await ctx.reply("⚠️ Такая транзакция уже существует, пожалуйста оплатите и отправьте свою транзакцию.");
+  } else if (isValid === "not found") {
+    await ctx.reply("⚠️ Ваши USDT ещё не поступили на кошелёк\n\n*зачисление идет от 1 до 5 мин, ожидайте, пожалуйста, и отправьте ХЭШ заново.");
+  } else if (isValid === "not enough") {
+    await ctx.reply("⚠️ Не правильная оплата, попробуйте еще раз отправить.");
+  } else {
+    await ctx.reply("⚠️ Ваши USDT ещё не поступили на кошелёк\n\n*зачисление идет от 1 до 5 мин, ожидайте, пожалуйста, и отправьте ХЭШ заново.");
+  }
+});
+
+// Функция проверки транзакции
+async function checkTransaction(txId, chatId) {
+  try {
+    const candidate = await User.findOne({bybitUID: txId})
+    if (candidate) {
+      return "scammer"
+    }
+    const response = await client.getDepositRecords({
+      coin: 'USDT'
+    });
+
+    if (response.retMsg === "success") {
+      const transactions = response.result.rows
+      const transaction = transactions.find((item) => item.txID === txId)
+      if (!transaction) {
+        return "not found"
+      }
+      const user = await User.find({chatId})
+
+      if (transaction.amount < user.bybitUIDPrice) {
+        return "not enough"
+      }
+
+      user.bybitUID = txId
+      await user.save()
+      return {isValid: "success", transaction}
+    } else {
+      return "error in bybit"
+    }
+  } catch (error) {
+    console.error(`Ошибка при проверке TXID: ${error.message}`);
+    return false
+  }
+}
 
 async function handleStart(ctx) {
   const chatId = ctx.chat.id.toString();
@@ -76,34 +172,7 @@ async function handleStart(ctx) {
 
 ////testgit
 
-bot.hears('Подробнее', async (ctx) => {
-  try {
-      const chatId = ctx.chat.id.toString();
-      let user = await User.findOne({ chatId });
 
-      if (!user) {
-          user = new User({
-              chatId,
-              currentMenu: 'start',
-              history: [],
-          });
-          await user.save();
-      } else {
-          user.currentMenu = 'start';
-          user.history = [];
-          await user.save();
-      }
-
-      // await ctx.sendVideo(
-      //   "BAACAgIAAxkDAAIBoGfQg7RyamGcAjjFU2xzsLaXygclAAKYcgACnHKISkGiUwABzfmF_TYE",
-      //   { caption: "Добро пожаловать! 🎬 Подробности ниже ⬇️" }
-      // );
-      await ctx.reply(menus.start.text, menus.start);
-  } catch (error) {
-      console.error('Ошибка в обработчике "Подробнее":', error);
-      await ctx.reply('Произошла ошибка, попробуйте снова.');
-  }
-});
 
 bot.on("chat_join_request", async (ctx) => {
   try {
@@ -431,6 +500,32 @@ app.post("/updateUserInvoiceId", async (req, res) => {
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
   }
 })
+
+app.post("/getHistories", async (req, res) => {
+  try {
+    const { email, hash, page = 1 } = req.body;
+    const filter = {};
+    const limit = 10
+
+    if (email) filter["rawData.buyer.email"] = email;
+    if (hash) filter["rawData.txID"] = hash;
+
+    const totalCount = await EventHistory.countDocuments(filter);
+    const histories = await EventHistory.find(filter)
+      .sort({ timestamp: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json({
+      histories,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Ошибка сервера", error });
+  }
+});
+
 
 const PORT = process.env.PORT || 3006;
 app.listen(PORT, async () => {
