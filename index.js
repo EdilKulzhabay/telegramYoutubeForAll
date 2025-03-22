@@ -45,18 +45,18 @@ bot.start(async (ctx) => {
   await handleStart(ctx);
 });
 
-bot.use((ctx, next) => {
-  const allowedChatId = '1308683371';
-  const currentChatId = ctx.chat?.id.toString();
+// bot.use((ctx, next) => {
+//   const allowedChatId = '1308683371';
+//   const currentChatId = ctx.chat?.id.toString();
 
-  if (currentChatId === allowedChatId) {
-    return next();
-  } else {
-    console.log(`Сообщение от ${currentChatId} проигнорировано, доступ только для ${allowedChatId}`);
-    ctx.reply("В данный момент идут технические работы, пожалуйста, попробуйте через 15 мин")
-    return;
-  }
-});
+//   if (currentChatId === allowedChatId) {
+//     return next();
+//   } else {
+//     console.log(`Сообщение от ${currentChatId} проигнорировано, доступ только для ${allowedChatId}`);
+//     ctx.reply("В данный момент идут технические работы, пожалуйста, попробуйте через 15 мин")
+//     return;
+//   }
+// });
 
 // Обработчик для слова "start"
 bot.hears(/^start$/i, async (ctx) => {

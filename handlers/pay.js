@@ -210,7 +210,7 @@ const registerPayHandlers = (bot, menus) => {
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: 'Я оплатил', callback_data: 'paid' }],
-                        [{ text: 'Инструкция', url: 'https://telegra.ph/Kak-oplatit-podpisku-kriptoj-12-09' }],
+                        // [{ text: 'Инструкция', url: 'https://telegra.ph/Kak-oplatit-podpisku-kriptoj-12-09' }],
                         [{ text: 'Назад', callback_data: 'back' }],
                     ],
                 },
