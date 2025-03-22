@@ -67,7 +67,7 @@ bot.hears('Подробнее', async (ctx) => {
   await handleStart(ctx);
 });
 
-bot.hears(/^0x[a-fA-F0-9]{64}$/, async (ctx) => {
+bot.hears(/^[a-fA-F0-9]{64}$/, async (ctx) => {
   await ctx.reply("Вы отправили txID. Мы его проверяем...");
   const txId = ctx.message.text;
   const chatId = ctx.chat.id;
