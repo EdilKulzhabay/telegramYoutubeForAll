@@ -75,6 +75,9 @@ bot.hears(/^[a-fA-F0-9]{64}$/, async (ctx) => {
 
   // Логика обработки транзакции
   const {isValid, transaction} = await checkTransaction(txId, chatId);
+  console.log("isValid = ", isValid);
+  console.log("transaction = ", transaction);
+  
   if (isValid === "success") {
     await EventHistory.create({
       eventType: "bybit",
