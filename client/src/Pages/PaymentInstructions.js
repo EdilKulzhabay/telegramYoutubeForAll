@@ -29,7 +29,7 @@ const PaymentInstructions = () => {
 
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-semibold mb-2">Шаг 1: Перейдите в меню бота по ссылке <a href="t.me/CryptoBot" className="text-blue-700 hover:text-blue-500">CryptoBot</a></h2>
+          <h2 className="text-xl font-semibold mb-2">Шаг 1: Перейдите в меню бота по ссылке <a href="https://t.me/CryptoBot" className="text-blue-700 hover:text-blue-500">CryptoBot</a></h2>
         </div>
 
         <div>
