@@ -125,7 +125,7 @@ export default function Pay() {
                 </div> */}
             
                 <h2 className="text-lg font-bold mb-4">Наименование товара</h2>
-                <p className="mb-4">Образовательное сообщество «YouTube для ВСЕХ» / {period} мес.</p>
+                <p className="mb-4">Академия «YouTube для ВСЕХ» / {period} мес.</p>
                 
                 <h2 className="text-lg font-bold mb-4">Метод оплаты</h2>
                 <div className="flex gap-2 mb-4">
@@ -161,7 +161,7 @@ export default function Pay() {
                 <div className="w-full max-w-md bg-gray-800 p-4 rounded-lg">
                     <div className="mb-2">
                     <p className="text-gray-400 text-sm">Наименование товара</p>
-                    <p className="text-white">Образовательное сообщество «YouTube для ВСЕХ» / {period} мес.</p>
+                    <p className="text-white">Академия «YouTube для ВСЕХ» / {period} мес.</p>
                     </div>
                     <div className="mb-2">
                     <p className="text-gray-400 text-sm">Метод оплаты</p>
