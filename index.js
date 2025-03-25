@@ -13,6 +13,9 @@ const { registerCommonHandlers } = require('./handlers/common.js');
 const User = require('./models/User.js');
 const EventHistory = require('./models/EventHistory.js');
 const { RestClientV5 } = require('bybit-api');
+const Admin = require('./models/Admin.js');
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 dotenv.config();
 
@@ -34,6 +37,7 @@ mongoose
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const CHANNEL_ID = process.env.CHANNEL_ID;
 const BOT_USERNAME = process.env.BOT_USERNAME;
+const SECRET_KEY = process.env.SECRET_KEY
 
 const userStates = new Map();
 
@@ -533,6 +537,24 @@ app.post("/getHistories", async (req, res) => {
   }
 });
 
+app.post("/auth", async (req, res) => {
+  const { email, password } = req.body;
+  const admin = await Admin.findOne({ email });
+  if (!admin || !(await bcrypt.compare(password, admin.password))) {
+      return res.status(401).json({ success: false, message: "Неверные учетные данные" });
+  }
+  const token = jwt.sign({ email }, SECRET_KEY, { expiresIn: "10y" });
+  res.json({ success: true, token });
+});
+
+// Проверка токена
+app.post("/verifyToken", (req, res) => {
+  const { token } = req.body;
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+      if (err) return res.json({ valid: false });
+      res.json({ valid: true, email: decoded.email });
+  });
+});
 
 const PORT = process.env.PORT || 3006;
 app.listen(PORT, async () => {

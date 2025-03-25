@@ -22,14 +22,14 @@ const PaymentInstructions = () => {
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h1 className="text-3xl font-bold text-center mb-6">Инструкция по оплате</h1>
 
-      <div className="my-4">
+      <div className="my-4 text-xl">
         <div className="font-semibold text-red-700">Важно!!!</div>
         <div className="font-semibold">Учитывайте комиссию при оплате, сумма оплаты не должна быть меньше указанной суммы.</div>
       </div>
 
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-semibold mb-2">Шаг 1: Перйдите в меню бота по ссылке <a href="t.me/CryptoBot" className="text-blue-700 hover:text-blue-500">CryptoBot</a></h2>
+          <h2 className="text-xl font-semibold mb-2">Шаг 1: Перейдите в меню бота по ссылке <a href="t.me/CryptoBot" className="text-blue-700 hover:text-blue-500">CryptoBot</a></h2>
         </div>
 
         <div>
@@ -55,6 +55,7 @@ const PaymentInstructions = () => {
         <div>
           <h2 className="text-xl font-semibold mb-2">Шаг 6: Выбираем подходящее объявление</h2>
           <img src={image4} alt="Шаг 6" className="w-full rounded-lg shadow-md" />
+          <p className="mt-2">Первая цифра - это цена за одну монету, а две другие цифры - минимальная и максимальня сумма покупки.</p>
         </div>
 
         <div>
@@ -78,7 +79,7 @@ const PaymentInstructions = () => {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-2">Шаг 11: После того как продавце принял сделку, открываем сделку</h2>
+          <h2 className="text-xl font-semibold mb-2">Шаг 11: После того как продавец принял сделку, открываем сделку</h2>
           <img src={image10} alt="Шаг 11" className="w-full rounded-lg shadow-md" />
         </div>
 
@@ -88,11 +89,11 @@ const PaymentInstructions = () => {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-2">После подтверждение нужно будет подождать около часа для того что бы USDT поступили на ваш кошелёк</h2>
+          <h2 className="text-xl font-semibold mb-2">После подтверждения нужно будет подождать около часа для того чтобы USDT поступили на ваш кошелёк</h2>
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-2">Шаг 13: Как придет подтверждение что USDT поступили, нужно будет заново прописать /start и нажать на кошелек</h2>
+          <h2 className="text-xl font-semibold mb-2">Шаг 13: Как придет подтверждение что USDT поступили, нужно будет заново ввести команду /start и нажать на кошелек</h2>
         </div>
 
         <div>
@@ -111,7 +112,7 @@ const PaymentInstructions = () => {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-2">Шаг 17: Вводим адрес кошелка который указал наш бот и вводим сумму</h2>
+          <h2 className="text-xl font-semibold mb-2">Шаг 17: Вводим адрес кошелька который указал наш бот и вводим сумму</h2>
         </div>
 
         <div>

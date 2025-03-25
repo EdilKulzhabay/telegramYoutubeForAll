@@ -1,7 +1,54 @@
 import { useEffect, useState } from "react";
 import api from "../api";
 
-export default function History() {
+function Auth({ onLogin }) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+
+    const handleLogin = async () => {
+        try {
+            const response = await api.post("/auth", { email, password });
+    
+            if (response.data.success) {
+                localStorage.setItem("token", response.data.token); // Храните токен вместо пароля
+                onLogin();
+            } else {
+                setError("Ошибка авторизации");
+            }
+        } catch (err) {
+            setError("Ошибка сервера");
+        }
+    };
+    
+
+    return (
+        <div className="px-5 py-10 flex flex-col items-center">
+            <h1 className="text-2xl font-medium">Авторизация</h1>
+            <input 
+                className="border p-2 mt-4" 
+                type="text" 
+                placeholder="Email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
+            />
+            <input 
+                className="border p-2 mt-2" 
+                type="password" 
+                placeholder="Password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+            />
+            {error && <p className="text-red-500 mt-2">{error}</p>}
+            <button 
+                className="px-4 py-2 bg-blue-700 text-white mt-4 hover:bg-blue-500"
+                onClick={handleLogin}
+            >Войти</button>
+        </div>
+    );
+}
+
+function HistoryData() {
     const [email, setEmail] = useState("");
     const [hash, setHash] = useState("");
     const [histories, setHistories] = useState([]);
@@ -91,4 +138,24 @@ export default function History() {
             </div>
         </div>
     );
+}
+
+export default function History() {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem("token");
+    
+        if (storedToken) {
+            api.post("/verifyToken", { token: storedToken })
+                .then(response => {
+                    if (response.data.valid) setIsAuthenticated(true);
+                })
+                .catch(() => {
+                    localStorage.removeItem("token");
+                });
+        }
+    }, []);
+
+    return isAuthenticated ? <HistoryData /> : <Auth onLogin={() => setIsAuthenticated(true)} />;
 }
