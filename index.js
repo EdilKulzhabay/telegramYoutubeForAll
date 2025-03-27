@@ -386,7 +386,7 @@ bot.action('manage_subscription', async (ctx) => {
               inlineKeyboard.push([{ text: 'Отписаться', callback_data: 'unsubscribe' }]);
               inlineKeyboard.push([{ text: 'Я хочу развиваться дальше', callback_data: 'subscribe_back' }]);
               
-              inlineKeyboard.push([{ text: 'Назад', callback_data: 'back' }]);
+              // inlineKeyboard.push([{ text: 'Назад', callback_data: 'back' }]);
 
               await ctx.reply(responseText, {
                   reply_markup: { inline_keyboard: inlineKeyboard }
