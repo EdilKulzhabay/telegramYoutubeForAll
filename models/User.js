@@ -6,6 +6,14 @@ const UserSchema = new mongoose.Schema(
             type: String,
             default: ""
         },
+        userName: {
+            type: String,
+            default: ""
+        },
+        firstName: {
+            type: String,
+            default: ""
+        },
         channelAccess: {
             type: Boolean,
             default: false

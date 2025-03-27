@@ -6,21 +6,21 @@ const generatePaymentLink = (chatId, selectedPlan) => {
 }
 
 const generateUSDTText = async (selectedPlan) => {
-    const price = await fetchProduct("foreign_bank", selectedPlan)
+    const price = await fetchProduct("foreign_bank", selectedPlan);
+    const address = "`TAPpx1TbLe334nsEhJbV4T9owWuVdsxN2k`"; // Адрес в моноширинном виде
 
-    const text = `Отправьте
-${price} USDT в сети TRC-20
-На адрес:
-\`TAPpx1TbLe334nsEhJbV4T9owWuVdsxN2k\`
+    const text = `Отправьте ${price} USDT
 
-*кликните на номер счета и он скопируется
+Сеть: TRC-20
 
-После оплаты нажмите Я оплатил 👇
+Адрес: ${address} (нажмите на адрес, чтобы скопировать его)
 
-*Обязательно проверьте адрес кошелька и сохраните ХЭШ транзакции (TXID)`
+‼️ Сумма вывода должна быть не меньше ${price} USDT. То есть, вам нужно отправить так, чтобы дошло не меньше ${price} USDT.
 
-    return {text, price}
-}
+*После оплаты нажмите "Я оплатил"* 👇`;
+
+    return { text, price };
+};
 
 const fetchProduct = async (paymentMethod, period) => {
     const productId = "6a336c2b-7992-40d7-8829-67159d4cd3c5";
@@ -104,7 +104,7 @@ const registerPayHandlers = (bot, menus) => {
               reply_markup: {
                   inline_keyboard: [
                       [{ text: '💳 Картой (любая валюта)', url: paymentUrl }],
-                      // [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+                      [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
                       [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
                       [{ text: 'Назад', callback_data: 'back' }],
                   ],
@@ -139,7 +139,7 @@ const registerPayHandlers = (bot, menus) => {
               reply_markup: {
                   inline_keyboard: [
                       [{ text: '💳 Картой (любая валюта)', url: paymentUrl }],
-                      // [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+                      [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
                       [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
                       [{ text: 'Назад', callback_data: 'back' }],
                   ],
@@ -174,7 +174,7 @@ const registerPayHandlers = (bot, menus) => {
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: '💳 Картой (любая валюта)', url: paymentUrl }],
-                        // [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+                        [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
                         [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
                         [{ text: 'Назад', callback_data: 'back' }],
                     ],
@@ -196,17 +196,17 @@ const registerPayHandlers = (bot, menus) => {
                 user = new User({ chatId });
                 await user.save();
             }
-
-            const {text, price} = await generateUSDTText(user.selectedPlan);
-            
+    
+            const { text, price } = await generateUSDTText(user.selectedPlan);
+    
             user.history.push(user.currentMenu);
             user.currentMenu = 'USDT';
-            user.bybitUIDPrice = price
+            user.bybitUIDPrice = price;
             await user.save();
-
-
+    
+            // Объект с параметрами для отправки
             const dynamicMenu = {
-                text: text,
+                parse_mode: 'Markdown',
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: 'Я оплатил', callback_data: 'paid' }],
@@ -215,10 +215,11 @@ const registerPayHandlers = (bot, menus) => {
                     ],
                 },
             };
-
-            await ctx.reply(dynamicMenu.text, dynamicMenu);
+    
+            // Отправляем текст с параметрами
+            await ctx.reply(text, dynamicMenu);
         } catch (error) {
-            console.error('Ошибка в twelveMonths:', error);
+            console.error('Ошибка в USDT:', error); // Исправил twelveMonths на USDT
             await ctx.reply('Произошла ошибка, попробуйте снова.');
         }
     });
@@ -238,7 +239,9 @@ const registerPayHandlers = (bot, menus) => {
 
 
             const dynamicMenu = {
-                text: "Пожалуйста отправьте ХЭШ транзакции (TXID)",
+                text: `Теперь отправьте ХЭШ транзакции (TXID). Вы можете найти его в истории транзакций.
+
+*ХЭШ отображается только после завершения транзакции. Если ХЭШ не отображается, то убедитесь, что транзакция завершена.*`,
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: 'Назад', callback_data: 'back' }],
@@ -246,7 +249,14 @@ const registerPayHandlers = (bot, menus) => {
                 },
             };
 
-            await ctx.reply(dynamicMenu.text, dynamicMenu);
+            await ctx.replyWithPhoto(
+                { source: '/Users/yedilkulzhabay/Desktop/serverBot/telegramYoutubeForAll/txid.jpg' },
+                {
+                    caption: dynamicMenu.text,
+                    reply_markup: dynamicMenu.reply_markup,
+                    parse_mode: 'Markdown', // Для поддержки форматирования текста (*курсив*)
+                }
+            );
         } catch (error) {
             console.error('Ошибка в twelveMonths:', error);
             await ctx.reply('Произошла ошибка, попробуйте снова.');
