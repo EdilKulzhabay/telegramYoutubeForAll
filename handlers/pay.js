@@ -250,7 +250,7 @@ const registerPayHandlers = (bot, menus) => {
             };
 
             await ctx.replyWithPhoto(
-                { source: '/Users/yedilkulzhabay/Desktop/serverBot/telegramYoutubeForAll/txid.jpg' },
+                { source: '/home/ubuntu/telegramYoutubeForAll/txid.jpg' },
                 {
                     caption: dynamicMenu.text,
                     reply_markup: dynamicMenu.reply_markup,
