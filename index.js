@@ -387,7 +387,7 @@ bot.action('manage_subscription', async (ctx) => {
                     if (isSubscribed) {
                         inlineKeyboard.push([{ text: 'Отписаться', callback_data: 'unsubscribe' }]);
                     } else {
-                        inlineKeyboard.push([{ text: 'Вернуться на канал', callback_data: 'subscribe_back' }]);
+                        inlineKeyboard.push([{ text: 'Я хочу развиваться дальше', callback_data: 'subscribe_back' }]);
                     }
                 }
                 
@@ -465,14 +465,34 @@ bot.action('unsubscribe', async (ctx) => {
         } 
       }
 
-      await bot.telegram.banChatMember(CHANNEL_ID, chatId);
+    const event2 = await EventHistory.findOne({
+      $or: [
+        { 'rawData.buyer.email': user.email },
+        { 'rawData.txID': user.bybitUID }
+      ]
+    }).sort({ timestamp: -1 });
+  
+    let endDateStr = 'неизвестно';
+    if (event2) {
+      const paymentDate = event2.timestamp;
+      const amount = parseFloat(event2.rawData.amount);
+      const currency = event2.rawData.currency || 'USD';
 
-      
-      await ctx.reply('Вы успешно отписались от канала. При наличии активного доступа вы можете вернуться в любой момент.', {
-          reply_markup: {
-              inline_keyboard: [[{ text: 'Вернуться на канал', callback_data: 'subscribe_back' }]]
-          }
-      });
+      // Предполагаемая функция для определения периода подписки
+      const period = determinePeriod(amount, currency); // Реализуйте эту функцию
+      if (period) {
+        const endDate = calculateEndDate(paymentDate, period);
+        endDateStr = endDate.toLocaleDateString('ru-RU'); // Формат даты, например, "27.03.2025"
+      }
+    }
+
+    //await bot.telegram.banChatMember(CHANNEL_ID, chatId);
+    
+    const message = `Вы успешно отписались. Доступ к каналу сохранится до ${endDateStr}.\n\n` +
+                    `Вы можете восстановить подписку после окончания доступа, нажав /start`;
+
+    // Отправляем сообщение
+    await ctx.reply(message);
       
   } catch (error) {
       console.error('Ошибка при отписке:', error);
@@ -484,49 +504,50 @@ bot.action('unsubscribe', async (ctx) => {
 bot.action('subscribe_back', async (ctx) => {
   const chatId = ctx.chat.id;
   try {
-      const user = await User.findOne({ chatId });
-      if (!user || !user.channelAccess) {
-          await ctx.reply('У вас нет активного доступа для возвращения на канал.');
-          return;
-      }
+      // const user = await User.findOne({ chatId });
+      // if (!user || !user.channelAccess) {
+      //     await ctx.reply('У вас нет активного доступа для возвращения на канал.');
+      //     return;
+      // }
 
-      user.history.push(user.currentMenu);
-      user.currentMenu = 'subscribe_back';
-      await user.save();
+      // user.history.push(user.currentMenu);
+      // user.currentMenu = 'subscribe_back';
+      // await user.save();
 
-      // Проверяем, не истек ли срок подписки
-      const event = await EventHistory.findOne({
-          $or: [
-              { 'rawData.buyer.email': user.email },
-              { 'rawData.txID': user.bybitUID }
-          ]
-      }).sort({ timestamp: -1 });
+      // // Проверяем, не истек ли срок подписки
+      // const event = await EventHistory.findOne({
+      //     $or: [
+      //         { 'rawData.buyer.email': user.email },
+      //         { 'rawData.txID': user.bybitUID }
+      //     ]
+      // }).sort({ timestamp: -1 });
 
-      if (event) {
-          const paymentDate = event.timestamp;
-          const amount = parseFloat(event.rawData.amount);
-          const currency = event.rawData.currency || 'USD';
-          const period = determinePeriod(amount, currency);
-          const endDate = calculateEndDate(paymentDate, period);
-          const currentDate = new Date();
+      // if (event) {
+      //     const paymentDate = event.timestamp;
+      //     const amount = parseFloat(event.rawData.amount);
+      //     const currency = event.rawData.currency || 'USD';
+      //     const period = determinePeriod(amount, currency);
+      //     const endDate = calculateEndDate(paymentDate, period);
+      //     const currentDate = new Date();
 
-          if (endDate > currentDate) {
-            await bot.telegram.unbanChatMember(CHANNEL_ID, chatId);
-            await ctx.reply('Добро пожаловать обратно! Вы снова добавлены в канал.', {
-                reply_markup: {
-                    inline_keyboard: [[{ text: 'Перейти на канал', url: 'https://t.me/+OKyL_x3DpoY5YmNi' }]]
-                }
-            });
-          } else {
-            user.channelAccess = false;
-            await user.save();
-            await ctx.reply('Срок вашей подписки истек. Оформите новую подписку для доступа к каналу.', {
-              reply_markup: {
-                inline_keyboard: [[{ text: 'Оформить новую подписку', callback_data: 'start' }]]
-              }
-            });
-          }
-      }
+      //     if (endDate > currentDate) {
+      //       await bot.telegram.unbanChatMember(CHANNEL_ID, chatId);
+      //       await ctx.reply('Добро пожаловать обратно! Вы снова добавлены в канал.', {
+      //           reply_markup: {
+      //               inline_keyboard: [[{ text: 'Перейти на канал', url: 'https://t.me/+OKyL_x3DpoY5YmNi' }]]
+      //           }
+      //       });
+      //     } else {
+      //       user.channelAccess = false;
+      //       await user.save();
+      //       await ctx.reply('Срок вашей подписки истек. Оформите новую подписку для доступа к каналу.', {
+      //         reply_markup: {
+      //           inline_keyboard: [[{ text: 'Оформить новую подписку', callback_data: 'start' }]]
+      //         }
+      //       });
+      //     }
+      // }
+      await ctx.reply('Отличное решение')
   } catch (error) {
       console.error('Ошибка при возвращении на канал:', error);
       await ctx.reply('Произошла ошибка при возвращении на канал, попробуйте снова.');
