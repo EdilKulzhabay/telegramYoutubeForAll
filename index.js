@@ -111,7 +111,10 @@ bot.action('start', async (ctx) => {
 //   }
 // });
 
+let stopUpdating = false;
+
 async function getUsernameByChatId(chatId) {
+  if (stopUpdating) return;
   try {
     const chat = await bot.telegram.getChat(chatId);
     const userName = chat.username; // @username или undefined, если не задан
@@ -137,6 +140,11 @@ bot.hears(/^start$/i, async (ctx) => {
 
 bot.hears('Подробнее', async (ctx) => {
   await handleStart(ctx);
+});
+
+bot.hears('stopUpdating', async (ctx) => {
+  stopUpdating = true;
+  await ctx.reply('Обновление имен пользователей остановлено.');
 });
 
 bot.hears('getUsernameByChatId', async (ctx) => {
