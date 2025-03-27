@@ -383,20 +383,15 @@ bot.action('manage_subscription', async (ctx) => {
 
               const inlineKeyboard = [];
                 
-                if (hasActiveAccess) {
-                    if (isSubscribed) {
-                        inlineKeyboard.push([{ text: 'Отписаться', callback_data: 'unsubscribe' }]);
-                    } else {
-                        inlineKeyboard.push([{ text: 'Я хочу развиваться дальше', callback_data: 'subscribe_back' }]);
-                    }
-                }
-                
-                inlineKeyboard.push([{ text: 'Назад', callback_data: 'back' }]);
+              inlineKeyboard.push([{ text: 'Отписаться', callback_data: 'unsubscribe' }]);
+              inlineKeyboard.push([{ text: 'Я хочу развиваться дальше', callback_data: 'subscribe_back' }]);
+              
+              inlineKeyboard.push([{ text: 'Назад', callback_data: 'back' }]);
 
-                await ctx.reply(responseText, {
-                    reply_markup: { inline_keyboard: inlineKeyboard }
-                });
-                return
+              await ctx.reply(responseText, {
+                  reply_markup: { inline_keyboard: inlineKeyboard }
+              });
+              return
           }
       } else {
         await ctx.reply("Произошла ошибка при проверке подписки, повторите через 15 мин.");
