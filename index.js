@@ -98,18 +98,18 @@ bot.action('start', async (ctx) => {
   await handleStart(ctx);
 });
 
-bot.use((ctx, next) => {
-  const allowedChatId = '1308683371';
-  const currentChatId = ctx.chat?.id.toString();
+// bot.use((ctx, next) => {
+//   const allowedChatId = '1308683371';
+//   const currentChatId = ctx.chat?.id.toString();
 
-  if (currentChatId === allowedChatId) {
-    return next();
-  } else {
-    console.log(`Сообщение от ${currentChatId} проигнорировано, доступ только для ${allowedChatId}`);
-    ctx.reply("В данный момент идут технические работы, пожалуйста, попробуйте через 15 мин")
-    return;
-  }
-});
+//   if (currentChatId === allowedChatId) {
+//     return next();
+//   } else {
+//     console.log(`Сообщение от ${currentChatId} проигнорировано, доступ только для ${allowedChatId}`);
+//     ctx.reply("В данный момент идут технические работы, пожалуйста, попробуйте через 15 мин")
+//     return;
+//   }
+// });
 
 async function getUsernameByChatId(chatId) {
   try {
@@ -300,10 +300,10 @@ async function handleStart(ctx) {
                   const endDateStr = endDate.toLocaleDateString('ru-RU');
 
                   // Формируем текст с правильной Markdown-ссылкой
-                  responseText = `Твой доступ в Академию ["YouTube ДЛЯ ВСЕХ"](https://t.me/+OKyL_x3DpoY5YmNi) доступно до: ${endDateStr}`;
+                  responseText = `Твой доступ в Академию "YouTube ДЛЯ ВСЕХ" https://t.me/+OKyL_x3DpoY5YmNi`;
               } 
           } else {
-              responseText = `Твой доступ в Академию "YouTube ДЛЯ ВСЕХ"\n[Перейти в Академию](https://t.me/+OKyL_x3DpoY5YmNi)\n\nДанные об оплате не найдены.`;
+              responseText = `Твой доступ в Академию "YouTube ДЛЯ ВСЕХ" https://t.me/+OKyL_x3DpoY5YmNi`;
           }
 
           await ctx.reply(responseText, {
@@ -315,10 +315,10 @@ async function handleStart(ctx) {
               },
           });
       } else {
-          // await ctx.sendVideo(
-          //     "BAACAgIAAxkDAAIBoGfQg7RyamGcAjjFU2xzsLaXygclAAKYcgACnHKISkGiUwABzfmF_TYE",
-          //     { caption: "Добро пожаловать! 🎬 Подробности ниже ⬇️" }
-          // );
+          await ctx.sendVideo(
+              "BAACAgIAAxkDAAIBoGfQg7RyamGcAjjFU2xzsLaXygclAAKYcgACnHKISkGiUwABzfmF_TYE",
+              { caption: "Добро пожаловать! 🎬 Подробности ниже ⬇️" }
+          );
           await ctx.reply(responseText, menus.start);
       }
 
@@ -372,7 +372,7 @@ bot.action('manage_subscription', async (ctx) => {
               const endDateStr = endDate.toLocaleDateString('ru-RU');
 
               // Формируем текст с правильной Markdown-ссылкой
-              responseText = `Твой доступ в Академию ["YouTube ДЛЯ ВСЕХ"](https://t.me/+OKyL_x3DpoY5YmNi) доступно до: ${endDateStr}`;
+              responseText = `Ваша подписка активна до: ${endDateStr}`;
 
               const inlineKeyboard = [];
                 
@@ -391,26 +391,10 @@ bot.action('manage_subscription', async (ctx) => {
                     reply_markup: { inline_keyboard: inlineKeyboard }
                 });
                 return
-          } else {
-            responseText = `Твой доступ в Академию ["YouTube ДЛЯ ВСЕХ"](https://t.me/+OKyL_x3DpoY5YmNi) доступно до: ${endDateStr}`;
           }
       } else {
-          responseText = `Твой доступ в Академию ["YouTube ДЛЯ ВСЕХ"](https://t.me/+OKyL_x3DpoY5YmNi)\nДанные об оплате не найдены.`;
+        await ctx.reply("Произошла ошибка при проверке подписки, повторите через 15 мин.");
       }
-
-      // Объект с параметрами для отправки
-      const dynamicMenu = {
-          parse_mode: 'Markdown',
-          reply_markup: {
-              inline_keyboard: [
-                  [{ text: 'Отписаться', callback_data: 'unsubscribe' }],
-                  [{ text: 'Назад', callback_data: 'back' }],
-              ],
-          },
-      };
-
-      // Отправляем текст с параметрами
-      await ctx.reply(responseText, dynamicMenu);
   } catch (error) {
       console.error('Ошибка в USDT:', error); // Исправил twelveMonths на USDT
       await ctx.reply('Произошла ошибка, попробуйте снова.');
@@ -525,7 +509,7 @@ bot.action('subscribe_back', async (ctx) => {
             await bot.telegram.unbanChatMember(CHANNEL_ID, chatId);
             await ctx.reply('Добро пожаловать обратно! Вы снова добавлены в канал.', {
                 reply_markup: {
-                    inline_keyboard: [[{ text: 'Перейти в канал', url: 'https://t.me/+OKyL_x3DpoY5YmNi' }]]
+                    inline_keyboard: [[{ text: 'Перейти на канал', url: 'https://t.me/+OKyL_x3DpoY5YmNi' }]]
                 }
             });
           } else {
