@@ -307,7 +307,6 @@ async function handleStart(ctx) {
           }
 
           await ctx.reply(responseText, {
-              parse_mode: 'Markdown',
               reply_markup: {
                   inline_keyboard: [
                       [{ text: 'Управлять подпиской', callback_data: 'manage_subscription' }],
@@ -387,7 +386,6 @@ bot.action('manage_subscription', async (ctx) => {
                 inlineKeyboard.push([{ text: 'Назад', callback_data: 'back' }]);
 
                 await ctx.reply(responseText, {
-                    parse_mode: 'Markdown',
                     reply_markup: { inline_keyboard: inlineKeyboard }
                 });
                 return
@@ -446,7 +444,6 @@ bot.action('unsubscribe', async (ctx) => {
         // Пример обработки конкретных статусов
         if (statusCode === 400 || statusCode === 401) {
             const dynamicMenu = {
-              parse_mode: 'Markdown',
               reply_markup: {
                   inline_keyboard: [
                       [{ text: 'Назад', callback_data: 'back' }],
