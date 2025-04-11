@@ -1,4 +1,5 @@
 const { Telegraf } = require('telegraf');
+const cron = require('node-cron');
 const mongoose = require('mongoose');
 const express = require('express');
 const dotenv = require('dotenv');
@@ -113,6 +114,87 @@ bot.action('start', async (ctx) => {
 
 let stopUpdating = false;
 
+cron.schedule('0 2 * * *', async () => {
+  console.log('⏱️ Запуск проверки доступа пользователей...');
+
+  const users = await User.find({ channelAccess: true });
+
+  console.log("users = ", users);
+  
+
+  for (const user of users) {
+    const latestEvent = await EventHistory.findOne({ 
+      $or: [
+        { eventType: "bybit", "rawData.txID": user.bybitUID },
+        { eventType: "payment.success", "rawData.buyer.email": user.email }
+      ]
+    }).sort({ timestamp: -1 });
+
+    if ("latestEvent = ", latestEvent)
+
+    if (!latestEvent) continue;
+
+    const amount = latestEvent.rawData.amount
+    let currency = "USD"
+    if (latestEvent.eventType === 'payment.success') {
+      currency = latestEvent.rawData.currency
+    }
+    let planMonths = 1; // По умолчанию 1 месяц
+    if (currency === "USD" && amount > 100 && amount < 500) {
+      planMonths = 3; // 3 месяца
+    } else if (currency === "USD" && amount > 500) {
+      planMonths = 12; // 12 месяцев
+    } else if (currency === "RUB" && amount > 12000 && amount < 40000) {
+      planMonths = 3; // 3 месяца
+    } else if (currency === "RUB" && amount > 40000) {
+      planMonths = 12; // 12 месяцев
+    }
+
+    // Расчёт даты окончания с запасом на 1 день
+    const expiryDate = new Date(latestEvent.timestamp);
+    expiryDate.setMonth(expiryDate.getMonth() + planMonths); // Добавляем месяцы
+    expiryDate.setDate(expiryDate.getDate() + 1);
+
+    console.log(`У пользователя с id ${user.chatId} и почтой ${user?.email} или txid ${user?.bybitUID} срок окончания ${expiryDate}`);
+
+    if (new Date() > expiryDate) {
+      console.log(`У пользователя с id ${user.chatId} и почтой ${user?.email} или txid ${user?.bybitUID} срок окончания ${expiryDate}`);
+      
+      user.channelAccess = false;
+      await user.save();
+      try {
+
+        const lastPaymentDate = new Date(latestEvent.timestamp).toLocaleDateString('ru-RU');
+        let message = `Пользователь с chatId ${user.chatId} удалён из-за неоплаты.\n`;
+        if (user.email) message += `Email: ${user.email}\n`;
+        if (user.bybitUID) message += `Bybit UID: ${user.bybitUID}\n`;
+        message += `Дата последней оплаты: ${lastPaymentDate}`;
+
+        // Отправляем сообщение администратору с chatId 1308683371
+        await bot.telegram.sendMessage('1308683371', message);
+
+        // 1. Уведомление
+        await bot.telegram.sendMessage(user.chatId, '⛔️ Срок вашей подписки истёк. Доступ к каналу был отключён. Чтобы продлить доступ, оформите подписку снова.');
+
+        // 2. Исключение из канала
+        let isSubscribed = await checkSubscriptionStatus(user.chatId, CHANNEL_ID);
+        if (isSubscribed) {
+          console.log("isSubscribed true");
+          
+          await bot.telegram.banChatMember(CHANNEL_ID, user.chatId);
+        }
+
+        console.log(`🔒 Пользователь ${user.chatId} отключён и удалён из канала.`);
+      } catch (err) {
+        console.error(`❌ Не удалось удалить ${user.chatId} из канала или отправить сообщение:`, err.message);
+      }
+    }
+  }
+
+  console.log('✅ Проверка завершена.');
+});
+
+
 async function getUsernameByChatId(chatId) {
   if (stopUpdating) return;
   try {
@@ -219,6 +301,16 @@ bot.hears(/^[a-fA-F0-9]{64}$/, async (ctx) => {
     await ctx.reply("⚠️ Ваши USDT ещё не поступили на кошелёк\n\n*зачисление идет от 1 до 5 мин, ожидайте, пожалуйста, и отправьте ХЭШ заново.");
   }
 });
+
+async function checkSubscriptionStatus(userId, channelId) {
+  try {
+      const member = await bot.telegram.getChatMember(channelId, userId);
+      return ['member', 'administrator', 'creator'].includes(member.status);
+  } catch (error) {
+      return false; // Предполагаем, что пользователь не подписан, если возникла ошибка
+  }
+}
+
 
 // Функция проверки транзакции
 async function checkTransaction(txId, chatId) {
@@ -481,7 +573,7 @@ bot.action('unsubscribe', async (ctx) => {
       }
     }
 
-    //await bot.telegram.banChatMember(CHANNEL_ID, chatId);
+    // await bot.telegram.banChatMember(CHANNEL_ID, chatId);
     
     const message = `Вы успешно отписались. Доступ к каналу сохранится до ${endDateStr}.\n\n` +
                     `Вы можете восстановить подписку после окончания доступа, нажав /start`;
@@ -550,14 +642,7 @@ bot.action('subscribe_back', async (ctx) => {
 });
 
 // Функция проверки статуса подписки
-async function checkSubscriptionStatus(userId, channelId) {
-  try {
-      const member = await bot.telegram.getChatMember(channelId, userId);
-      return ['member', 'administrator', 'creator'].includes(member.status);
-  } catch (error) {
-      return false; // Предполагаем, что пользователь не подписан, если возникла ошибка
-  }
-}
+
 
 
 bot.on("chat_join_request", async (ctx) => {
