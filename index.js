@@ -158,6 +158,7 @@ cron.schedule('19 9 * * *', async () => {
 
         const expiryDate = new Date(latestEvent.timestamp);
         expiryDate.setMonth(expiryDate.getMonth() + planMonths);
+        expiryDate.setDate(expiryDate.getDate() - 1);
 
         console.log(`У пользователя с id ${user.chatId} и почтой ${user?.email} или txid ${user?.bybitUID} срок окончания ${expiryDate}`);
 
