@@ -114,84 +114,86 @@ bot.action('start', async (ctx) => {
 
 let stopUpdating = false;
 
-cron.schedule('5 9 * * *', async () => {
+cron.schedule('19 9 * * *', async () => {
   console.log('⏱️ Запуск проверки доступа пользователей...');
 
-  const users = await User.find({ channelAccess: true });
+  try {
+    const users = await User.find({ channelAccess: true });
+    console.log("Найдено пользователей:", users.length);
 
-  console.log("users = ", users);
-  
-
-  for (const user of users) {
-    const latestEvent = await EventHistory.findOne({ 
-      $or: [
-        { eventType: "bybit", "rawData.txID": user.bybitUID },
-        { eventType: "payment.success", "rawData.buyer.email": user.email }
-      ]
-    }).sort({ timestamp: -1 });
-
-    if ("latestEvent = ", latestEvent)
-
-    if (!latestEvent) continue;
-
-    const amount = latestEvent.rawData.amount
-    let currency = "USD"
-    if (latestEvent.eventType === 'payment.success') {
-      currency = latestEvent.rawData.currency
-    }
-    let planMonths = 1; // По умолчанию 1 месяц
-    if (currency === "USD" && amount > 100 && amount < 500) {
-      planMonths = 3; // 3 месяца
-    } else if (currency === "USD" && amount > 500) {
-      planMonths = 12; // 12 месяцев
-    } else if (currency === "RUB" && amount > 12000 && amount < 40000) {
-      planMonths = 3; // 3 месяца
-    } else if (currency === "RUB" && amount > 40000) {
-      planMonths = 12; // 12 месяцев
-    }
-
-    // Расчёт даты окончания с запасом на 1 день
-    const expiryDate = new Date(latestEvent.timestamp);
-    expiryDate.setMonth(expiryDate.getMonth() + planMonths); // Добавляем месяцы
-    expiryDate.setDate(expiryDate.getDate() + 1);
-
-    console.log(`У пользователя с id ${user.chatId} и почтой ${user?.email} или txid ${user?.bybitUID} срок окончания ${expiryDate}`);
-
-    if (new Date() > expiryDate) {
-      console.log(`У пользователя с id ${user.chatId} и почтой ${user?.email} или txid ${user?.bybitUID} срок окончания ${expiryDate}`);
-      
-      user.channelAccess = false;
-      await user.save();
+    for (const user of users) {
       try {
+        console.log(`Обработка пользователя ${user.chatId}`);
+        
+        const latestEvent = await EventHistory.findOne({ 
+          $or: [
+            { eventType: "bybit", "rawData.txID": user.bybitUID },
+            { eventType: "payment.success", "rawData.buyer.email": user.email }
+          ]
+        }).sort({ timestamp: -1 });
 
-        const lastPaymentDate = new Date(latestEvent.timestamp).toLocaleDateString('ru-RU');
-        let message = `Пользователь с chatId ${user.chatId} удалён из-за неоплаты.\n`;
-        if (user.email) message += `Email: ${user.email}\n`;
-        if (user.bybitUID) message += `Bybit UID: ${user.bybitUID}\n`;
-        message += `Дата последней оплаты: ${lastPaymentDate}`;
+        console.log(`latestEvent для ${user.chatId} =`, latestEvent);
 
-        // Отправляем сообщение администратору с chatId 1308683371
-        await bot.telegram.sendMessage('1308683371', message);
-
-        // 1. Уведомление
-        await bot.telegram.sendMessage(user.chatId, '⛔️ Срок вашей подписки истёк. Доступ к каналу был отключён. Чтобы продлить доступ, оформите подписку снова.');
-
-        // 2. Исключение из канала
-        let isSubscribed = await checkSubscriptionStatus(user.chatId, CHANNEL_ID);
-        if (isSubscribed) {
-          console.log("isSubscribed true");
-          
-          await bot.telegram.banChatMember(CHANNEL_ID, user.chatId);
+        if (!latestEvent) {
+          console.log(`Нет событий для пользователя ${user.chatId}`);
+          continue;
         }
 
-        console.log(`🔒 Пользователь ${user.chatId} отключён и удалён из канала.`);
+        const amount = latestEvent.rawData.amount;
+        let currency = "USD";
+        if (latestEvent.eventType === 'payment.success') {
+          currency = latestEvent.rawData.currency || "USD";
+        }
+
+        let planMonths = 1;
+        if (currency === "USD" && amount > 100 && amount < 500) {
+          planMonths = 3;
+        } else if (currency === "USD" && amount > 500) {
+          planMonths = 12;
+        } else if (currency === "RUB" && amount > 12000 && amount < 40000) {
+          planMonths = 3;
+        } else if (currency === "RUB" && amount > 40000) {
+          planMonths = 12;
+        }
+
+        const expiryDate = new Date(latestEvent.timestamp);
+        expiryDate.setMonth(expiryDate.getMonth() + planMonths);
+        expiryDate.setDate(expiryDate.getDate() + 1);
+
+        console.log(`У пользователя с id ${user.chatId} и почтой ${user?.email} или txid ${user?.bybitUID} срок окончания ${expiryDate}`);
+
+        if (new Date() > expiryDate) {
+          console.log(`Подписка истекла для ${user.chatId}, срок окончания ${expiryDate}`);
+          
+          user.channelAccess = false;
+          await user.save();
+
+          const lastPaymentDate = new Date(latestEvent.timestamp).toLocaleDateString('ru-RU');
+          let message = `Пользователь с chatId ${user.chatId} удалён из-за неоплаты.\n`;
+          if (user.email) message += `Email: ${user.email}\n`;
+          if (user.bybitUID) message += `Bybit UID: ${user.bybitUID}\n`;
+          message += `Дата последней оплаты: ${lastPaymentDate}`;
+
+          await bot.telegram.sendMessage('1308683371', message);
+          await bot.telegram.sendMessage(user.chatId, '⛔️ Срок вашей подписки истёк. Доступ к каналу был отключён. Чтобы продлить доступ, оформите подписку снова.');
+
+          let isSubscribed = await checkSubscriptionStatus(user.chatId, CHANNEL_ID);
+          if (isSubscribed) {
+            console.log("isSubscribed true");
+            await bot.telegram.banChatMember(CHANNEL_ID, user.chatId);
+          }
+
+          console.log(`🔒 Пользователь ${user.chatId} отключён и удалён из канала.`);
+        }
       } catch (err) {
-        console.error(`❌ Не удалось удалить ${user.chatId} из канала или отправить сообщение:`, err.message);
+        console.error(`❌ Ошибка при обработке пользователя ${user.chatId}:`, err.message);
       }
     }
-  }
 
-  console.log('✅ Проверка завершена.');
+    console.log('✅ Проверка завершена.');
+  } catch (err) {
+    console.error('❌ Ошибка в cron-задаче:', err.message);
+  }
 });
 
 
