@@ -114,84 +114,84 @@ bot.action('start', async (ctx) => {
 
 let stopUpdating = false;
 
-cron.schedule('10 10 * * *', async () => {
-  console.log('⏱️ Запуск обработки событий подписки...');
+// cron.schedule('10 10 * * *', async () => {
+//   console.log('⏱️ Запуск обработки событий подписки...');
 
-  try {
-    // Исправляем опечатку и добавляем фильтр по времени, если нужно
-    const eventHistories = await EventHistory.find({
-      eventType: 'subscription.recurring.payment.success'
-    });
+//   try {
+//     // Исправляем опечатку и добавляем фильтр по времени, если нужно
+//     const eventHistories = await EventHistory.find({
+//       eventType: 'subscription.recurring.payment.success'
+//     });
 
-    console.log(`Найдено событий: ${eventHistories.length}`);
+//     console.log(`Найдено событий: ${eventHistories.length}`);
 
-    for (const eventHistory of eventHistories) {
-      try {
-        // Проверяем наличие email
-        if (!eventHistory.rawData?.buyer?.email) {
-          console.log(`Пропуск события ${eventHistory._id}: отсутствует email`);
-          continue;
-        }
+//     for (const eventHistory of eventHistories) {
+//       try {
+//         // Проверяем наличие email
+//         if (!eventHistory.rawData?.buyer?.email) {
+//           console.log(`Пропуск события ${eventHistory._id}: отсутствует email`);
+//           continue;
+//         }
 
-        // Ищем пользователя
-        const user = await User.findOne({ email: eventHistory.rawData.buyer.email });
-        if (!user) {
-          console.log(`Пользователь с email ${eventHistory.rawData.buyer.email} не найден`);
-          continue;
-        }
+//         // Ищем пользователя
+//         const user = await User.findOne({ email: eventHistory.rawData.buyer.email });
+//         if (!user) {
+//           console.log(`Пользователь с email ${eventHistory.rawData.buyer.email} не найден`);
+//           continue;
+//         }
 
-        const chatId = user.chatId;
+//         const chatId = user.chatId;
 
-        // Проверяем, забанен ли пользователь
-        let isBanned;
-        try {
-          isBanned = await isUserBanned(CHANNEL_ID, chatId);
-        } catch (err) {
-          console.error(`Ошибка проверки бана для chatId ${chatId}:`, err.message);
-          continue;
-        }
+//         // Проверяем, забанен ли пользователь
+//         let isBanned;
+//         try {
+//           isBanned = await isUserBanned(CHANNEL_ID, chatId);
+//         } catch (err) {
+//           console.error(`Ошибка проверки бана для chatId ${chatId}:`, err.message);
+//           continue;
+//         }
 
-        // Разбаниваем, если нужно
-        if (isBanned) {
-          try {
-            await unbanUser(CHANNEL_ID, chatId);
-            console.log(`Пользователь ${chatId} разбанен`);
-          } catch (err) {
-            console.error(`Ошибка разбана для chatId ${chatId}:`, err.message);
-            continue;
-          }
-        }
+//         // Разбаниваем, если нужно
+//         if (isBanned) {
+//           try {
+//             await unbanUser(CHANNEL_ID, chatId);
+//             console.log(`Пользователь ${chatId} разбанен`);
+//           } catch (err) {
+//             console.error(`Ошибка разбана для chatId ${chatId}:`, err.message);
+//             continue;
+//           }
+//         }
 
-        // Обновляем данные пользователя
-        user.channelAccess = true;
-        user.payData.date = new Date(eventHistory.timestamp); // Исправлено: используем eventHistory.timestamp
+//         // Обновляем данные пользователя
+//         user.channelAccess = true;
+//         user.payData.date = new Date(eventHistory.timestamp); // Исправлено: используем eventHistory.timestamp
 
-        await user.save();
-        console.log(`Пользователь ${chatId} обновлён`);
+//         await user.save();
+//         console.log(`Пользователь ${chatId} обновлён`);
 
-        // Отправляем сообщение
-        try {
-          await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
-            chat_id: chatId,
-            text: `Вас исключили по ошибке на стороне сервера, просим прощения! 
-Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi`
-          });
-          console.log(`Сообщение отправлено пользователю ${chatId}`);
-        } catch (err) {
-          console.error(`Ошибка отправки сообщения пользователю ${chatId}:`, err.message);
-        }
-      } catch (err) {
-        console.error(`Ошибка обработки события ${eventHistory._id}:`, err.message);
-      }
-    }
+//         // Отправляем сообщение
+//         try {
+//           await axios.post(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+//             chat_id: chatId,
+//             text: `Вас исключили по ошибке на стороне сервера, просим прощения! 
+// Нажмите, чтобы присоединиться: https://t.me/+OKyL_x3DpoY5YmNi`
+//           });
+//           console.log(`Сообщение отправлено пользователю ${chatId}`);
+//         } catch (err) {
+//           console.error(`Ошибка отправки сообщения пользователю ${chatId}:`, err.message);
+//         }
+//       } catch (err) {
+//         console.error(`Ошибка обработки события ${eventHistory._id}:`, err.message);
+//       }
+//     }
 
-    console.log('✅ Обработка событий завершена.');
-  } catch (err) {
-    console.error('❌ Ошибка в cron-задаче:', err.message);
-  }
-});
+//     console.log('✅ Обработка событий завершена.');
+//   } catch (err) {
+//     console.error('❌ Ошибка в cron-задаче:', err.message);
+//   }
+// });
 
-cron.schedule('35 9 * * *', async () => {
+cron.schedule('10 7 * * *', async () => {
   console.log('⏱️ Запуск проверки доступа пользователей...');
 
   try {
@@ -205,6 +205,7 @@ cron.schedule('35 9 * * *', async () => {
         const latestEvent = await EventHistory.findOne({ 
           $or: [
             { eventType: "bybit", "rawData.txID": user.bybitUID },
+            { eventType: 'subscription.recurring.payment.success', "rawData.buyer.email": user.email},
             { eventType: "payment.success", "rawData.buyer.email": user.email }
           ]
         }).sort({ timestamp: -1 });
