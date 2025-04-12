@@ -860,6 +860,12 @@ app.post('/lavaTopNormalPay', async (req, res) => {
 
         const chatId = user.chatId
 
+        let isSubscribed = await checkSubscriptionStatus(chatId, CHANNEL_ID);
+
+        if (isSubscribed) {
+          return res.json({ message: "Оплата подтверждена, доступ выдан" });
+        }
+
         const isBanned = await isUserBanned(CHANNEL_ID, chatId)
 
         if (isBanned) {
@@ -911,6 +917,12 @@ app.post('/lavaTopRegularPay', async (req, res) => {
       }
 
       const chatId = user.chatId
+
+      let isSubscribed = await checkSubscriptionStatus(chatId, CHANNEL_ID);
+
+      if (isSubscribed) {
+        return res.json({ message: "Оплата подтверждена, доступ выдан" });
+      }
 
       const isBanned = await isUserBanned(CHANNEL_ID, chatId)
 
