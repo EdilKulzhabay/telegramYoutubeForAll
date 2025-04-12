@@ -114,7 +114,7 @@ bot.action('start', async (ctx) => {
 
 let stopUpdating = false;
 
-cron.schedule('19 9 * * *', async () => {
+cron.schedule('35 9 * * *', async () => {
   console.log('⏱️ Запуск проверки доступа пользователей...');
 
   try {
@@ -131,8 +131,6 @@ cron.schedule('19 9 * * *', async () => {
             { eventType: "payment.success", "rawData.buyer.email": user.email }
           ]
         }).sort({ timestamp: -1 });
-
-        console.log(`latestEvent для ${user.chatId} =`, latestEvent);
 
         if (!latestEvent) {
           console.log(`Нет событий для пользователя ${user.chatId}`);
