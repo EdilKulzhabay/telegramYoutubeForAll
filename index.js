@@ -114,7 +114,7 @@ bot.action('start', async (ctx) => {
 
 let stopUpdating = false;
 
-cron.schedule('0 2 * * *', async () => {
+cron.schedule('5 9 * * *', async () => {
   console.log('⏱️ Запуск проверки доступа пользователей...');
 
   const users = await User.find({ channelAccess: true });
