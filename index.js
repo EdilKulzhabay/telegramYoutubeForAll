@@ -1201,7 +1201,7 @@ app.get("/getUEE", async(req, res) => {
       }
     ]);
     
-    console.log('Уникальные события:', uniqueEvents);
+    console.log('Уникальные события:', uniqueEvents.length);
     res.json({
       uniqueEvents
     })
@@ -1231,7 +1231,7 @@ app.get("/getUEE2", async(req, res) => {
       }
     ]);
     
-    console.log('Уникальные события:', uniqueEvents);
+    console.log('Уникальные события:', uniqueEvents.length);
     res.json({
       uniqueEvents
     })
