@@ -17,6 +17,7 @@ const { RestClientV5 } = require('bybit-api');
 const Admin = require('./models/Admin.js');
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const SubscriptionCancelAttempt = require('./models/SubscriptionCancelAttempt.js');
 
 dotenv.config();
 
@@ -1263,32 +1264,23 @@ app.get("/getUEE2", async(req, res) => {
 
 app.post("/cancelAllSubscriptions", async (req, res) => {
   try {
-    // Находим все успешные подписки
-    // const subscriptions = await EventHistory.find({
-    //   eventType: "payment.success",
-    //   "rawData.status": "subscription-active"
-    // });
-
-    const subscription = await EventHistory.findOne({
+    const subscriptions = await EventHistory.find({
       eventType: "payment.success",
       "rawData.status": "subscription-active"
     });
 
-    console.log("subscription = ", subscription);
-
-    // console.log(`Найдено подписок для отмены: ${subscriptions.length}`);
+    console.log(`Найдено подписок для отмены: ${subscriptions.length}`);
 
     const results = [];
     
-    // Отменяем каждую подписку
-    // for (const subscription of subscriptions) {
+    for (const subscription of subscriptions) {
       try {
         const email = subscription.rawData.buyer.email;
         const contractId = subscription.rawData.contractId;
 
         if (!email || !contractId) {
           console.log(`Пропущена подписка: отсутствует email или contractId`);
-          // continue;
+          continue;
         }
 
         const response = await axios.delete(
@@ -1314,6 +1306,15 @@ app.post("/cancelAllSubscriptions", async (req, res) => {
 
         console.log(`Подписка отменена для ${email}`);
       } catch (error) {
+        // Сохраняем информацию о неудачной попытке
+        await SubscriptionCancelAttempt.create({
+          email: subscription.rawData.buyer.email,
+          contractId: subscription.rawData.contractId,
+          status: error.response?.status || 500,
+          error: error.message,
+          eventHistoryId: subscription._id
+        });
+
         results.push({
           email: subscription.rawData.buyer.email,
           contractId: subscription.rawData.contractId,
@@ -1323,10 +1324,10 @@ app.post("/cancelAllSubscriptions", async (req, res) => {
         });
         console.error(`Ошибка при отмене подписки:`, error.message);
       }
-    // }
+    }
 
     res.json({
-      // message: `Обработано подписок: ${subscriptions.length}`,
+      message: `Обработано подписок: ${subscriptions.length}`,
       results
     });
   } catch (error) {
