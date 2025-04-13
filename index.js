@@ -1291,7 +1291,7 @@ app.post("/cancelAllSubscriptions", async (req, res) => {
           // continue;
         }
 
-        const response = await axios.post(
+        const response = await axios.delete(
           "https://gate.lava.top/api/v1/subscriptions",
           {
             contractId: contractId,
