@@ -1264,24 +1264,29 @@ app.get("/getUEE2", async(req, res) => {
 app.post("/cancelAllSubscriptions", async (req, res) => {
   try {
     // Находим все успешные подписки
-    const subscriptions = await EventHistory.find({
+    // const subscriptions = await EventHistory.find({
+    //   eventType: "payment.success",
+    //   "rawData.status": "subscription-active"
+    // });
+
+    const subscription = await EventHistory.find({
       eventType: "payment.success",
       "rawData.status": "subscription-active"
     });
 
-    console.log(`Найдено подписок для отмены: ${subscriptions.length}`);
+    // console.log(`Найдено подписок для отмены: ${subscriptions.length}`);
 
     const results = [];
     
     // Отменяем каждую подписку
-    for (const subscription of subscriptions) {
+    // for (const subscription of subscriptions) {
       try {
         const email = subscription.rawData.buyer.email;
         const contractId = subscription.rawData.contractId;
 
         if (!email || !contractId) {
           console.log(`Пропущена подписка: отсутствует email или contractId`);
-          continue;
+          // continue;
         }
 
         const response = await axios.post(
@@ -1316,10 +1321,10 @@ app.post("/cancelAllSubscriptions", async (req, res) => {
         });
         console.error(`Ошибка при отмене подписки:`, error.message);
       }
-    }
+    // }
 
     res.json({
-      message: `Обработано подписок: ${subscriptions.length}`,
+      // message: `Обработано подписок: ${subscriptions.length}`,
       results
     });
   } catch (error) {
