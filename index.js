@@ -40,6 +40,17 @@ const CHANNEL_ID = process.env.CHANNEL_ID;
 const BOT_USERNAME = process.env.BOT_USERNAME;
 const SECRET_KEY = process.env.SECRET_KEY
 
+// Обработчик для всех сообщений
+bot.on('message', async (ctx) => {
+  await ctx.reply('В данный момент набор в Академию закрыт.');
+});
+
+// Обработчик для всех callback_query (нажатий на кнопки)
+bot.on('callback_query', async (ctx) => {
+  await ctx.answerCbQuery(); // Отвечаем на callback query, чтобы убрать "часики" на кнопке
+  await ctx.reply('В данный момент набор в Академию закрыт.');
+});
+
 const userStates = new Map();
 
 function determinePeriod(amount, currency) {
