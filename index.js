@@ -1182,6 +1182,66 @@ app.post("/searchUser", async(req, res) => {
   }
 })
 
+app.get("/getUEE", async(req, res) => {
+  try {
+    const uniqueEvents = await EventHistory.aggregate([
+      {
+        $match: {
+          eventType: "subscription.recurring.payment.success"
+        }
+      },
+      {
+        $group: {
+          _id: "$rawData.buyer.email",
+          latestEvent: { $last: "$$ROOT" }
+        }
+      },
+      {
+        $replaceRoot: { newRoot: "$latestEvent" }
+      }
+    ]);
+    
+    console.log('Уникальные события:', uniqueEvents);
+    res.json({
+      uniqueEvents
+    })
+    return uniqueEvents;
+  } catch (err) {
+    console.error('Ошибка при получении событий:', err);
+    res.status(500).json({ message: "Ошибка сервера", err });
+  }
+})
+
+app.get("/getUEE2", async(req, res) => {
+  try {
+    const uniqueEvents = await EventHistory.aggregate([
+      {
+        $match: {
+          eventType: "payment.success"
+        }
+      },
+      {
+        $group: {
+          _id: "$rawData.buyer.email",
+          latestEvent: { $last: "$$ROOT" }
+        }
+      },
+      {
+        $replaceRoot: { newRoot: "$latestEvent" }
+      }
+    ]);
+    
+    console.log('Уникальные события:', uniqueEvents);
+    res.json({
+      uniqueEvents
+    })
+    return uniqueEvents;
+  } catch (err) {
+    console.error('Ошибка при получении событий:', err);
+    res.status(500).json({ message: "Ошибка сервера", err });
+  }
+})
+
 const PORT = process.env.PORT || 3006;
 app.listen(PORT, async () => {
   console.log(`Сервер запущен на порту ${PORT}`);
