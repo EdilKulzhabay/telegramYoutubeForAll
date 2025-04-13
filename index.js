@@ -1269,7 +1269,7 @@ app.post("/cancelAllSubscriptions", async (req, res) => {
     //   "rawData.status": "subscription-active"
     // });
 
-    const subscription = await EventHistory.find({
+    const subscription = await EventHistory.findOne({
       eventType: "payment.success",
       "rawData.status": "subscription-active"
     });
