@@ -26,3 +26,5 @@ async function getUniqueEmailEvents() {
     throw err;
   }
 }
+
+getUniqueEmailEvents()
