@@ -1203,6 +1203,7 @@ app.get("/getUEE", async(req, res) => {
     
     console.log('Уникальные события:', uniqueEvents.length);
     res.json({
+      message: `Уникальные события: ${uniqueEvents.length}`,
       uniqueEvents
     })
     return uniqueEvents;
@@ -1233,6 +1234,7 @@ app.get("/getUEE2", async(req, res) => {
     
     console.log('Уникальные события:', uniqueEvents.length);
     res.json({
+      message: `Уникальные события: ${uniqueEvents.length}`,
       uniqueEvents
     })
     return uniqueEvents;
