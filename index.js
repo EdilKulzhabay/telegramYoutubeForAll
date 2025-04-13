@@ -1274,6 +1274,8 @@ app.post("/cancelAllSubscriptions", async (req, res) => {
       "rawData.status": "subscription-active"
     });
 
+    console.log("subscription = ", subscription);
+
     // console.log(`Найдено подписок для отмены: ${subscriptions.length}`);
 
     const results = [];
