@@ -614,16 +614,16 @@ bot.action('unsubscribe', async (ctx) => {
       
 
       if (event) {
-        const response = await axios.post(
+        const response = await axios.delete(
           "https://gate.lava.top/api/v1/subscriptions",
           {
-              contractId: event.rawData.contractId,
-              email: event.rawData.buyer.email
-          },
-          {
+              params: {
+                contractId: event.rawData.contractId,
+                email: event.rawData.buyer.email
+              },
               headers: {
-                  "Content-Type": "application/json",
-                  "X-Api-Key": process.env.X_API_KEY,
+                "Content-Type": "application/json",
+                "X-Api-Key": process.env.X_API_KEY,
               },
           }
         );
@@ -1294,10 +1294,10 @@ app.post("/cancelAllSubscriptions", async (req, res) => {
         const response = await axios.delete(
           "https://gate.lava.top/api/v1/subscriptions",
           {
-            contractId: contractId,
-            email: email
-          },
-          {
+            params: {
+              contractId: contractId,
+              email: email
+            },
             headers: {
               "Content-Type": "application/json",
               "X-Api-Key": process.env.X_API_KEY,
