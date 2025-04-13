@@ -42,13 +42,19 @@ const SECRET_KEY = process.env.SECRET_KEY
 
 // Обработчик для всех сообщений
 bot.on('message', async (ctx) => {
-  await ctx.reply('В данный момент набор в Академию закрыт.');
+  // Проверяем, что сообщение из личного чата
+  if (ctx.chat.type === 'private') {
+    await ctx.reply('В данный момент набор в Академию закрыт.');
+  }
 });
 
 // Обработчик для всех callback_query (нажатий на кнопки)
 bot.on('callback_query', async (ctx) => {
-  await ctx.answerCbQuery(); // Отвечаем на callback query, чтобы убрать "часики" на кнопке
-  await ctx.reply('В данный момент набор в Академию закрыт.');
+  // Проверяем, что callback из личного чата
+  if (ctx.chat.type === 'private') {
+    await ctx.answerCbQuery(); // Отвечаем на callback query, чтобы убрать "часики" на кнопке
+    await ctx.reply('В данный момент набор в Академию закрыт.');
+  }
 });
 
 const userStates = new Map();
@@ -1254,6 +1260,73 @@ app.get("/getUEE2", async(req, res) => {
     res.status(500).json({ message: "Ошибка сервера", err });
   }
 })
+
+app.post("/cancelAllSubscriptions", async (req, res) => {
+  try {
+    // Находим все успешные подписки
+    const subscriptions = await EventHistory.find({
+      eventType: "payment.success",
+      "rawData.status": "subscription-active"
+    });
+
+    console.log(`Найдено подписок для отмены: ${subscriptions.length}`);
+
+    const results = [];
+    
+    // Отменяем каждую подписку
+    for (const subscription of subscriptions) {
+      try {
+        const email = subscription.rawData.buyer.email;
+        const contractId = subscription.rawData.contractId;
+
+        if (!email || !contractId) {
+          console.log(`Пропущена подписка: отсутствует email или contractId`);
+          continue;
+        }
+
+        const response = await axios.post(
+          "https://gate.lava.top/api/v1/subscriptions",
+          {
+            contractId: contractId,
+            email: email
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-Api-Key": process.env.X_API_KEY,
+            },
+          }
+        );
+
+        results.push({
+          email,
+          contractId,
+          status: response.status,
+          success: true
+        });
+
+        console.log(`Подписка отменена для ${email}`);
+      } catch (error) {
+        results.push({
+          email: subscription.rawData.buyer.email,
+          contractId: subscription.rawData.contractId,
+          status: error.response?.status,
+          error: error.message,
+          success: false
+        });
+        console.error(`Ошибка при отмене подписки:`, error.message);
+      }
+    }
+
+    res.json({
+      message: `Обработано подписок: ${subscriptions.length}`,
+      results
+    });
+  } catch (error) {
+    console.error('Ошибка при отмене подписок:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
+});
 
 const PORT = process.env.PORT || 3006;
 app.listen(PORT, async () => {
