@@ -105,7 +105,7 @@ export default function Pay() {
         }
     };
 
-    return <div className="flex items-center justify-center bg-black min-h-screen">
+    return <div className="flex items-center justify-center bg-black min-h-screen text-center">
         <div className="text-2xl text-white">В данный момент набор в Академию закрыт.</div>
     </div>
     
