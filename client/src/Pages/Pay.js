@@ -104,6 +104,10 @@ export default function Pay() {
             setTimeout(() => setLoading(false), 2000);
         }
     };
+
+    return <div className="flex items-center justify-center bg-black">
+        <div className="text-2xl text-white">В данный момент набор в Академию закрыт.</div>
+    </div>
     
 
     return <div className="flex items-center justify-center min-h-screen bg-black text-white p-4">
