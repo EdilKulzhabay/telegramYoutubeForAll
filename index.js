@@ -49,11 +49,20 @@ bot.on('message', async (ctx) => {
   }
 });
 
-// Обработчик для всех callback_query (нажатий на кнопки)
+// Универсальный обработчик для всех типов кнопок
 bot.on('callback_query', async (ctx) => {
   // Проверяем, что callback из личного чата
   if (ctx.chat.type === 'private') {
     await ctx.answerCbQuery(); // Отвечаем на callback query, чтобы убрать "часики" на кнопке
+    await ctx.reply('В данный момент набор в Академию закрыт.');
+    return; // Прерываем выполнение, чтобы другие обработчики не сработали
+  }
+});
+
+// Отключаем все остальные обработчики кнопок
+bot.action(/.*/, async (ctx) => {
+  if (ctx.chat.type === 'private') {
+    await ctx.answerCbQuery();
     await ctx.reply('В данный момент набор в Академию закрыт.');
   }
 });

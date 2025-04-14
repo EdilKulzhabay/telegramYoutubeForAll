@@ -37,10 +37,10 @@ const menus = {
         text: oneMonth, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Картой (любая валюта)', url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }],
-            [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+            [{ text: 'Картой (любая валюта)', callback_data: 'closed' }],
+            [{ text: 'USDT (trc-20)', callback_data: 'closed' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
-            [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
+            [{ text: 'Договор оферты', callback_data: 'closed' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
         },
@@ -50,10 +50,10 @@ const menus = {
         text: threeMonthss, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Картой (любая валюта)', url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }],
-            [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+            [{ text: 'Картой (любая валюта)', callback_data: 'closed' }],
+            [{ text: 'USDT (trc-20)', callback_data: 'closed' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
-            [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
+            [{ text: 'Договор оферты', callback_data: 'closed' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
         },
@@ -63,10 +63,10 @@ const menus = {
         text: twelveMonths, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Картой (любая валюта)', url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }],
-            [{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
+            [{ text: 'Картой (любая валюта)', callback_data: 'closed' }],
+            [{ text: 'USDT (trc-20)', callback_data: 'closed' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
-            [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
+            [{ text: 'Договор оферты', callback_data: 'closed' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
         },
@@ -76,8 +76,8 @@ const menus = {
         text: USDT, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Я оплатил', callback_data: 'paid' }],
-            [{ text: 'Инструкция', url: 'https://telegra.ph/Kak-oplatit-podpisku-kriptoj-12-09' }],
+            [{ text: 'Я оплатил', callback_data: 'closed' }],
+            [{ text: 'Инструкция', callback_data: 'closed' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
         },
@@ -102,9 +102,9 @@ const menus = {
       text: partnerMenu, // Можно заменить на другой текст, если нужно
       reply_markup: {
         inline_keyboard: [
-          [{ text: 'Реферальная ссылка', callback_data: 'referralLink' }],
-          [{ text: 'Моя статистика', callback_data: 'statistics' }],
-          [{ text: 'Создать заявку на вывод средства', callback_data: 'getMoney' }],
+          [{ text: 'Реферальная ссылка', callback_data: 'closed' }],
+          [{ text: 'Моя статистика', callback_data: 'closed' }],
+          [{ text: 'Создать заявку на вывод средства', callback_data: 'closed' }],
           // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
           [{ text: 'Назад', callback_data: 'back' }],
         ],
@@ -116,8 +116,8 @@ const menus = {
         text2: referralLinkText2, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Для друзей', callback_data: 'forFriends' }],
-            [{ text: 'Делать контент', callback_data: 'makeContent' }],
+            [{ text: 'Для друзей', callback_data: 'closed' }],
+            [{ text: 'Делать контент', callback_data: 'closed' }],
           ],
         },
     },
@@ -153,7 +153,7 @@ const menus = {
         text: getMoney, // Можно заменить на другой текст, если нужно
         reply_markup: { 
           inline_keyboard: [
-            [{ text: 'Вывести', web_app: { url: 'https://tibetskayacrm.kz' } }],
+            [{ text: 'Вывести', callback_data: 'closed' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
         },
@@ -165,9 +165,9 @@ const menus = {
       text: donateBase, // Можно заменить на другой текст, если нужно
       reply_markup: {
         inline_keyboard: [
-          [{ text: '1 месяц', callback_data: 'oneMonthDonate' }],
-          [{ text: '3 месяцев', callback_data: 'threeMonthssDonate' }],
-          [{ text: '12 месяцев', callback_data: 'twelveMonthsDonate' }],
+          [{ text: '1 месяц', callback_data: 'closed' }],
+          [{ text: '3 месяцев', callback_data: 'closed' }],
+          [{ text: '12 месяцев', callback_data: 'closed' }],
           [{ text: 'Назад', callback_data: 'back' }],
         ],
       },
@@ -177,10 +177,10 @@ const menus = {
         text: donateText, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
+            [{ text: 'Картой (любая валюта)', callback_data: 'closed' }],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
-            [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
+            [{ text: 'Договор оферты', callback_data: 'closed' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
         },
@@ -190,10 +190,10 @@ const menus = {
         text: donateText, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
+            [{ text: 'Картой (любая валюта)', callback_data: 'closed' }],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
-            [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
+            [{ text: 'Договор оферты', callback_data: 'closed' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
         },
@@ -203,10 +203,10 @@ const menus = {
         text: donateText, // Можно заменить на другой текст, если нужно
         reply_markup: {
           inline_keyboard: [
-            [{ text: 'Картой (любая валюта)', web_app: { url: 'https://app.lava.top/2896058821?subscriptionOfferId=e9885c47-63ea-4e39-b7ca-89bc89fa6cc4' }}],
+            [{ text: 'Картой (любая валюта)', callback_data: 'closed' }],
             //[{ text: 'USDT (trc-20)', callback_data: 'USDT' }],
             // [{ text: 'Задать вопрос', web_app: { url: 'https://tibetskayacrm.kz' } }],
-            [{ text: 'Договор оферты', url: 'https://yt-filatov.com/public-offer' }],
+            [{ text: 'Договор оферты', callback_data: 'closed' }],
             [{ text: 'Назад', callback_data: 'back' }],
           ],
         },
