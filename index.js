@@ -44,6 +44,7 @@ const SECRET_KEY = process.env.SECRET_KEY
 // Обработчик для всех сообщений
 bot.on('message', async (ctx) => {
   // Проверяем, что сообщение из личного чата
+  console.log("ctx = ", ctx);
   if (ctx.chat.type === 'private') {
     await ctx.reply('В данный момент набор в Академию закрыт.');
   }
@@ -51,6 +52,7 @@ bot.on('message', async (ctx) => {
 
 // Универсальный обработчик для всех типов кнопок
 bot.on('callback_query', async (ctx) => {
+  console.log("ctx = ", ctx);
   // Проверяем, что callback из личного чата
   if (ctx.chat.type === 'private') {
     await ctx.answerCbQuery(); // Отвечаем на callback query, чтобы убрать "часики" на кнопке
@@ -61,6 +63,7 @@ bot.on('callback_query', async (ctx) => {
 
 // Отключаем все остальные обработчики кнопок
 bot.action(/.*/, async (ctx) => {
+  console.log("ctx = ", ctx);
   if (ctx.chat.type === 'private') {
     await ctx.answerCbQuery();
     await ctx.reply('В данный момент набор в Академию закрыт.');
