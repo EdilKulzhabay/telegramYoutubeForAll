@@ -1375,3 +1375,8 @@ app.post("/cancelAllSubscriptions", async (req, res) => {
     res.status(500).json({ error: 'Внутренняя ошибка сервера' });
   }
 });
+
+const PORT = process.env.PORT || 3006;
+app.listen(PORT, async () => {
+  console.log(`Сервер запущен на порту ${PORT}`);
+});
