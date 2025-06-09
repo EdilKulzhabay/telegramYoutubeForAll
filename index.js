@@ -1274,6 +1274,34 @@ app.get("/getUEE2", async(req, res) => {
   }
 })
 
+app.post("/deleteAbok", async (req, res) => {
+  try {
+    const {email, contractId} = req.body
+
+    const response = await axios.delete(
+      "https://gate.lava.top/api/v1/subscriptions",
+      {
+        params: {
+          contractId: contractId,
+          email: email
+        },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Api-Key": process.env.X_API_KEY,
+        },
+      }
+    );
+
+    res.json({
+      response
+    })
+    
+  } catch (error) {
+    console.log("error");
+    res.status.json({error})
+  }
+})
+
 app.post("/cancelAllSubscriptions", async (req, res) => {
   try {
     const subscriptions = await EventHistory.find({
