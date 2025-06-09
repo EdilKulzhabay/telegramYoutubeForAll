@@ -1277,6 +1277,8 @@ app.get("/getUEE2", async(req, res) => {
 app.post("/deleteAbok", async (req, res) => {
   try {
     const {email, contractId} = req.body
+    console.log(email, contractId);
+    
 
     const response = await axios.delete(
       "https://gate.lava.top/api/v1/subscriptions",
@@ -1291,6 +1293,9 @@ app.post("/deleteAbok", async (req, res) => {
         },
       }
     );
+
+    console.log(response);
+    
 
     res.json({
       response
